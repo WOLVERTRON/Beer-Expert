@@ -23,6 +23,14 @@
 		(type SYMBOL)
 	)
 
+	(multislot style
+		(type SYMBOL)
+	)
+
+	(slot abv	; alcohol by volume
+		(type NUMBER)
+	)
+
 	(slot price
 		(type SYMBOL)
 		(allowed-values
@@ -35,64 +43,23 @@
 		)
 	)
 
+	(multislot serving-temp
+		(type NUMBER)
+		(cardinality 2 2) ; range
+	)	
+
 	; Aroma
-	(multislot aroma-malt	(type SYMBOL))
-	(multislot aroma-hops	(type SYMBOL))
-	(multislot aroma-yeast	(type SYMBOL))
-	(multislot aroma-misc	(type SYMBOL))
+	(multislot aroma)
 
 	; Appearance
-	(multislot appear-head-initial		(type SYMBOL))
-	(multislot appear-head-color		(type SYMBOL))
-	(multislot appear-head-lacing		(type SYMBOL))
-	(multislot appear-head-longevity	(type SYMBOL))
-	(multislot appear-body-clarity		(type SYMBOL))
-	(multislot appear-body-particles	(type SYMBOL))
-	(multislot appear-body-hue			(type SYMBOL))
+	(multislot appearance-head)
+	(multislot appearance-body)
 
 	; Flavor
-	(multislot flavor-initial	;single or multislot?
-		(type SYMBOL)
-		(allowed-values
-			sweet-light
-			sweet-moderate
-			sweet-heavy
-			sweet-harsh
-			acidic-light
-			acidic-moderate
-			acidic-heavy
-			acidic-harsh
-			bitter-light
-			bitter-moderate
-			bitter-heavy
-			bitter-harsh
-			acetic
-			sour
-			salty
-		)
-	)
+	(multislot flavor)
 
-	(multislot flavor-finish	;single or multislot?
-        (type SYMBOL)
-        (allowed-values
-            sweet-light
-            sweet-moderate
-            sweet-heavy
-            sweet-harsh
-            acidic-light
-            acidic-moderate
-            acidic-heavy
-            acidic-harsh
-            bitter-light
-            bitter-moderate
-            bitter-heavy
-            bitter-harsh
-            acetic
-            sour
-            salty
-        )
-    )
-
+	(multislot flavor-initial)
+	(multislot flavor-finish)
 	(slot flavor-duration
 		(type SYMBOL)
 		(allowed-values
@@ -103,6 +70,8 @@
 	)
 
 	; Palate
+	(multislot palate)
+
 	(slot palate-body
 		(type SYMBOL)
 		(allowed-values
@@ -153,7 +122,11 @@
 )
 
 
-(deftemplate like-appearance
+(deftemplate like
+
+	(slot category
+		(type SYMBOL)
+	)
 
 	(multislot user
 		(type SYMBOL)
