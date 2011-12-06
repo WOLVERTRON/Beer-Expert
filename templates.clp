@@ -1,3 +1,20 @@
+(defmodule MAIN
+	(export ?ALL))
+
+
+;; A potential phase changer, but I don't think I want it
+;; to flow this way.
+
+;(defrule change-phase
+;	?s <- (phase ?next $?rest)
+;=>
+;	(focus ?next)
+;	(retract ?s)
+;	(assert (phase $?rest ?next))
+;)
+
+
+
 (deftemplate user
 
 	(multislot name
