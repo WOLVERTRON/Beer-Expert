@@ -1,5 +1,5 @@
 (clear)
-(unwatch all)
+(watch all)
 (load templates.clp)
 (load main.clp)
 (load explore.clp)

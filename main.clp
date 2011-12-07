@@ -55,42 +55,42 @@
 	(retract ?s)
 	(printout t
 		crlf vtab "What is your name? "
-	)
+	)	
 	(assert
-		(login-name (read))
+		(login-name (explode$ (readline)))
 	)
 )
 
 
-(defrule login-exists
+(defrule login-valid
 	"If user exists, set as current."
-	?s <- (login-name ?name)
+	?s <- (login-name $?name)
 	(user
-		(name ?name)
+		(name $?name)
 		(age ?age)
 	)
 =>
 	(retract ?s)
 	(assert
-		(current-user ?name)
+		(current-user $?name)
 	)
-	(printout t "Welcome back, " ?name "!")
+	(printout t "Welcome back, " $?name "!")
 	(get-char t)
 )
 
 
-(defrule login-does-not-exist
+(defrule login-invalid
 	"Login name does not exist. Verify if this was the intended name."
-	?s <- (login-name ?name)
-	(not (user (name ?name)))
+	?s <- (login-name $?name)
+	(not (user (name $?name)))
 =>
 	(retract ?s)
 	(printout t
-		crlf vtab "The user \"" ?name "\" does not currently exist."
+		crlf vtab "The user \"" (implode$ $?name) "\" does not currently exist."
 	)
 
 	(assert
-		(create-account (name ?name))
+		(create-account $?name)
 	)
 		
 )
@@ -98,10 +98,10 @@
 
 (defrule create-account
 	"Confirm user wants to create an account."
-	(create-account ?name)
+	(create-account $?name)
 =>
 	(printout t
-		crlf "Do you wish to create an account for \"" ?name "\"? "
+		crlf "Do you wish to create an account for \"" (implode$ $?name) "\"? "
 	)
 	(assert (create-account-response (lowcase (read))))
 )
@@ -109,7 +109,7 @@
 
 (defrule create-account-no
 	?s1 <- (create-account-response ~yes)
-	?s2 <- (create-account ?name)
+	?s2 <- (create-account $?name)
 =>
 	(retract ?s1 ?s2)
 	(assert (login))
@@ -117,13 +117,14 @@
 
 (defrule create-account-yes
 	?s1 <- (create-account-response yes)
-	?s2 <- (create-account ?name)
+	?s2 <- (create-account $?name)
 =>
 	(retract ?s1 ?s2)
 	(assert
-		(current-user ?name)
-		(user (name ?name))
-		(ask-age)
+		(current-user $?name)
+		(user (name $?name))
+		;(ask-age)
+		(main menu) ; temp for here.
 	)
 )
 

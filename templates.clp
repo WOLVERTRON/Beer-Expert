@@ -1,7 +1,3 @@
-(defmodule MAIN
-	(export ?ALL))
-
-
 ;; A potential phase changer, but I don't think I want it
 ;; to flow this way.
 
@@ -15,7 +11,7 @@
 
 
 
-(deftemplate user
+(deftemplate MAIN::user
 
 	(multislot name
 		(type SYMBOL)
@@ -29,7 +25,7 @@
 
 )
 
-(deftemplate beer
+(deftemplate MAIN::beer
 	(multislot name
 		(type SYMBOL)
 		(default ?NONE)
@@ -139,7 +135,7 @@
 )
 
 
-(deftemplate like
+(deftemplate MAIN::like
 
 	(slot category
 		(type SYMBOL)
