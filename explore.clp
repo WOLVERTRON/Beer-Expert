@@ -18,11 +18,13 @@
 
 =>
 	(printout t 
+		crlf vtab
 		"In order to better recommend brews to you, we're going to explore "
 		"what characteristics you enjoy in a beverage!"
-		crlf vtab
-		(assert (explore menu))
+		crlf vtab "(Press enter to continue...)"
 	)
+	(get-char t)
+	(assert (explore menu))
 )
 
 
@@ -31,20 +33,30 @@
 
 	?s <- (explore menu)
 =>
+	(system clear)
 	(retract ?s)
 	(printout t
-		crlf "These are the areas we can work with: "
+        crlf "                                 .:.      .:.         .:.             "
+        crlf "                               _oOoOo   _oOoOo       oOoOo_           "
+        crlf "                              [_|||||  [_|||||       |||||_]          "
+        crlf "                                |||||    |||||       |||||            "
+        crlf "                                ~~~~~    ~~~~~       ~~~~~            "
+		crlf "======================================================================"
+		crlf "  E X P L O R E   -   Add likes & dislikes!"
+		crlf "======================================================================"
 		crlf vtab
-		crlf tab "Style     " 	tab "- The type of beer."
-		crlf tab "Appearance"	tab "- How a beer looks."
-		crlf tab "Aroma     "	tab "- How a beer smells."
-		crlf tab "Palate    "	tab "- How a beer feels."
-		crlf tab "Flavor    "	tab "- How a beer tastes."
-		crlf tab "Origin    "	tab "- Where a beer is from."
+		crlf tab "[ Style      ] - The type of beer."
+		crlf tab "[ Appearance ] - How a beer looks."
+		crlf tab "[ Aroma      ] - How a beer smells."
+		crlf tab "[ Palate     ] - How a beer feels."
+		crlf tab "[ Flavor     ] - How a beer tastes."
+		crlf tab "[ Origin     ] - Where a beer is from."
 		crlf
-		crlf tab "Exit      "	tab "- Exit Explore, and return to Main menu."
+		crlf "----------------------------------------------------------------------"
+		crlf
+		crlf tab "[ Exit       ] - Exit Explore, and return to Main menu."
 		crlf vtab
-		"Which would you like to explore?" crlf
+		"Which category would you like to explore?" crlf
 	)
 	(assert 
 		(explore-menu-input (lowcase (read)))
@@ -85,8 +97,8 @@
 =>
 	(retract ?s)
 	(printout t
-		crlf "I'm sorry,\"" ?input "\" is not an option, please try again."
-		crlf
+		crlf vtab "I'm sorry,\"" ?input "\" is not an option, please try again."
+		crlf vtab "(Press enter to continue...)"
 	)
 	(assert
 		(explore menu)
@@ -200,18 +212,6 @@
 		(main menu)
 	)
 )
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -17,32 +17,114 @@
 	"Explain to user what the Beer Expert system is."
 
 =>
-	(printout t
+	(system clear)
+	(printout t	crlf vtab
+		crlf "======================================================================"
+		crlf "    B E E R   E X P E R T    -    version 1.0                         "
+		crlf "======================================================================"
+		crlf "             _, . '__ .                                               "  
+		crlf "          '_(_0o),(__)o().             Programmer: Chris Wolverton    "
+		crlf "        ,o(__),_)o(_)O,(__)o           Expert:     Kris Wilke         "
+		crlf "      o(_,-o(_ )(),(__(_)oO)_          Professor:  Dr. Minor          "
+		crlf "      .O(__)o,__).(_ )o(_)Oo_)         Course:     CS782              "
+		crlf "  .----|   |   |   |   |   |_)0        Due:        December 12, 2011  "
+		crlf " /  .--|   |   |   |   |   |,_)                                       "
+		crlf "|  /   |   |   |   |   |   |o(_)       Description:                   "
+		crlf "|  |   |   |   |   |   |   |_/`)           The BEER EXPERT will offer "
+		crlf "|  |   |   |   |   |   |   |O_)        beer recommendations based on  "
+		crlf "|  |   |   |   |   |   |   |           user preferences as determined "
+		crlf "|  \\   |   |   |   |   |   |          by exploratory questions, and  "
+		crlf " \\  '--|   |   |   |   |   |          direct input.                  "
+		crlf "  '----|   |   |   |   |   |                                          "
+		crlf "       |   |   |   |   |   |           (Press enter to continue...) "
+		crlf "       \\   \\   \\   /   /   /                                       "
+		crlf "        `'''''''''''''''''`                                           "
+		crlf "======================================================================"
 		crlf vtab
-crlf "======================================================================"
-crlf "    B E E R   E X P E R T    -    version 1.0                         "
-crlf "======================================================================"
-crlf "             _, . '__ .         " tab 
-crlf "          '_(_0o),(__)o().      " tab "Programmer: Chris Wolverton  "
-crlf "        ,o(__),_)o(_)O,(__)o    " tab "Expert:     Kris Wilke"
-crlf "      o(_,-o(_ )(),(__(_)oO)_   " tab "Professor:  Dr. Minor"
-crlf "      .O(__)o,__).(_ )o(_)Oo_)  " tab "Course:     CS782"
-crlf "  .----|   |   |   |   |   |_)0 " tab "Due:        December 12, 2011"
-crlf " /  .--|   |   |   |   |   |,_) "
-crlf "|  /   |   |   |   |   |   |o(_)" tab "Description:"
-crlf "|  |   |   |   |   |   |   |_/`)" tab "    The BEER EXPERT will offer"
-crlf "|  |   |   |   |   |   |   |O_) " tab "beer recommendations based on "
-crlf "|  |   |   |   |   |   |   |    " tab "user preferences as determined"
-crlf "|  \\   |   |   |   |   |   |    " tab "by exploratory questions, and "
-crlf " \\  '--|   |   |   |   |   |    " tab "direct input."
-crlf "  '----|   |   |   |   |   |    "
-crlf "       |   |   |   |   |   |    "
-crlf "       \\   \\   \\   /   /   /    "
-crlf "        `'''''''''''''''''`     "
-crlf "======================================================================"
-crlf vtab
 	)
-	(assert (main  menu))
+	(load-facts users.dat)
+	(assert (login))
+	(get-char t)
+)
+
+
+(defrule login
+	"Allow user to log-in to system, so we can individually track their preferences."
+	?s <- (login)
+=>
+	(retract ?s)
+	(printout t
+		crlf vtab "What is your name? "
+	)
+	(assert
+		(login-name (read))
+	)
+)
+
+
+(defrule login-exists
+	"If user exists, set as current."
+	?s <- (login-name ?name)
+	(user
+		(name ?name)
+		(age ?age)
+	)
+=>
+	(retract ?s)
+	(assert
+		(current-user ?name)
+	)
+	(printout t "Welcome back, " ?name "!")
+	(get-char t)
+)
+
+
+(defrule login-does-not-exist
+	"Login name does not exist. Verify if this was the intended name."
+	?s <- (login-name ?name)
+	(not (user (name ?name)))
+=>
+	(retract ?s)
+	(printout t
+		crlf vtab "The user \"" ?name "\" does not currently exist."
+	)
+
+	(assert
+		(create-account (name ?name))
+	)
+		
+)
+
+
+(defrule create-account
+	"Confirm user wants to create an account."
+	(create-account ?name)
+=>
+	(printout t
+		crlf "Do you wish to create an account for \"" ?name "\"? "
+	)
+	(assert (create-account-response (lowcase (read))))
+)
+
+
+(defrule create-account-no
+	?s1 <- (create-account-response ~yes)
+	?s2 <- (create-account ?name)
+=>
+	(retract ?s1 ?s2)
+	(assert (login))
+)
+
+(defrule create-account-yes
+	?s1 <- (create-account-response yes)
+	?s2 <- (create-account ?name)
+=>
+	(retract ?s1 ?s2)
+	(assert
+		(current-user ?name)
+		(user (name ?name))
+		(ask-age)
+	)
 )
 
 
@@ -51,22 +133,32 @@ crlf vtab
 
 	?s <- (main menu)
 =>
+	(system clear)
 	(retract ?s)
 	(printout t
-		crlf "Main Menu:"
+        crlf "                                 .:.      .:.         .:.             "
+        crlf "                               _oOoOo   _oOoOo       oOoOo_           "
+        crlf "                              [_|||||  [_|||||       |||||_]          "
+        crlf "                                |||||    |||||       |||||            "
+        crlf "                                ~~~~~    ~~~~~       ~~~~~            "
+ 		crlf "======================================================================"
+ 		crlf "  M A I N   M E N U "
+ 		crlf "======================================================================"
 		crlf vtab
-		crlf "Explore   - Answer exploratory questions to help discover"
-		crlf "            your personal taste."
+		crlf "[ Explore   ] - Answer exploratory questions to help discover your"
+		crlf "                personal taste."
 		crlf
-		crlf "Recommend - Get recommendations for beer based on what we"
-		crlf "            currently know about your preferences."
+		crlf "[ Recommend ] - Get recommendations for beer based on what we"
+		crlf "                currently know about your preferences."
 		crlf
-		crlf "Check     - Do your known preferences indicate you will "
-		crlf "            enjoy a particular beer? Check!"
+		crlf "[ Check     ] - Do your known preferences indicate you will enjoy a"
+		crlf "                particular beer? Check!"
 		crlf
-		crlf "Query     - Look up information on known beers and styles."
+		crlf "[ Query     ] - Look up information on known beers and styles."
 		crlf
-		crlf "Exit      - Quit the Beer Expert."
+		crlf "----------------------------------------------------------------------"
+		crlf
+		crlf "[ Exit      ] - Quit the Beer Expert."
 		crlf vtab
 		crlf "Your choice? " crlf
 	)
@@ -105,9 +197,10 @@ crlf vtab
 =>
 	(retract ?s)
 	(printout t
-		crlf "I'm sorry, \"" ?input "\" is not an option, please try again."
-		crlf
+		crlf vtab "I'm sorry, \"" ?input "\" is not an option, please try again."
+		crlf vtab "(Press enter to continue...)"
 	)
+	(get-char t)
 	(assert
 		(main menu)
 	)
@@ -128,5 +221,9 @@ crlf vtab
 	?s <- (menu exit)
 =>
 	(retract ?s)
+	(printout t
+		crlf vtab "Goodbye, and thanks for using the BEER EXPERT!"
+		crlf vtab
+	)
 	(exit)
 )
