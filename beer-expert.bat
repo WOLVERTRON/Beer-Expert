@@ -3,5 +3,6 @@
 (load templates.clp)
 (load main.clp)
 (load explore.clp)
+(load login.clp)
 (reset)
 (run)

@@ -8,7 +8,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defmodule MAIN
-	"Explore module discovers user preferences through user interrogation."
 	(export ?ALL)
 )
 
@@ -27,14 +26,14 @@
 		crlf "        ,o(__),_)o(_)O,(__)o           Expert:     Kris Wilke         "
 		crlf "      o(_,-o(_ )(),(__(_)oO)_          Professor:  Dr. Minor          "
 		crlf "      .O(__)o,__).(_ )o(_)Oo_)         Course:     CS782              "
-		crlf "  .----|   |   |   |   |   |_)0        Due:        December 12, 2011  "
+		crlf "  .----|   |   |   |   |   |_)0        Semester:   Fall 2011          "
 		crlf " /  .--|   |   |   |   |   |,_)                                       "
 		crlf "|  /   |   |   |   |   |   |o(_)       Description:                   "
 		crlf "|  |   |   |   |   |   |   |_/`)           The BEER EXPERT will offer "
 		crlf "|  |   |   |   |   |   |   |O_)        beer recommendations based on  "
 		crlf "|  |   |   |   |   |   |   |           user preferences as determined "
-		crlf "|  \\   |   |   |   |   |   |          by exploratory questions, and  "
-		crlf " \\  '--|   |   |   |   |   |          direct input.                  "
+		crlf "|  \\   |   |   |   |   |   |           by exploratory questions, and  "
+		crlf " \\  '--|   |   |   |   |   |           direct input.                  "
 		crlf "  '----|   |   |   |   |   |                                          "
 		crlf "       |   |   |   |   |   |           (Press enter to continue...) "
 		crlf "       \\   \\   \\   /   /   /                                       "
@@ -42,97 +41,16 @@
 		crlf "======================================================================"
 		crlf vtab
 	)
-	(load-facts users.dat)
-	(assert (login))
+	(focus LOGIN)
 	(get-char t)
+	(assert (show-menu))
 )
 
 
-(defrule login
-	"Allow user to log-in to system, so we can individually track their preferences."
-	?s <- (login)
-=>
-	(retract ?s)
-	(printout t
-		crlf vtab "What is your name? "
-	)	
-	(assert
-		(login-name (explode$ (readline)))
-	)
-)
-
-
-(defrule login-valid
-	"If user exists, set as current."
-	?s <- (login-name $?name)
-	(user
-		(name $?name)
-		(age ?age)
-	)
-=>
-	(retract ?s)
-	(assert
-		(current-user $?name)
-	)
-	(printout t "Welcome back, " $?name "!")
-	(get-char t)
-)
-
-
-(defrule login-invalid
-	"Login name does not exist. Verify if this was the intended name."
-	?s <- (login-name $?name)
-	(not (user (name $?name)))
-=>
-	(retract ?s)
-	(printout t
-		crlf vtab "The user \"" (implode$ $?name) "\" does not currently exist."
-	)
-
-	(assert
-		(create-account $?name)
-	)
-		
-)
-
-
-(defrule create-account
-	"Confirm user wants to create an account."
-	(create-account $?name)
-=>
-	(printout t
-		crlf "Do you wish to create an account for \"" (implode$ $?name) "\"? "
-	)
-	(assert (create-account-response (lowcase (read))))
-)
-
-
-(defrule create-account-no
-	?s1 <- (create-account-response ~yes)
-	?s2 <- (create-account $?name)
-=>
-	(retract ?s1 ?s2)
-	(assert (login))
-)
-
-(defrule create-account-yes
-	?s1 <- (create-account-response yes)
-	?s2 <- (create-account $?name)
-=>
-	(retract ?s1 ?s2)
-	(assert
-		(current-user $?name)
-		(user (name $?name))
-		;(ask-age)
-		(main menu) ; temp for here.
-	)
-)
-
-
-(defrule main-menu
+(defrule show-menu
 	"Display main menu options for user, and process input."
 
-	?s <- (main menu)
+	?s <- (show-menu)
 =>
 	(system clear)
 	(retract ?s)
@@ -163,22 +81,27 @@
 		crlf vtab
 		crlf "Your choice? " crlf
 	)
-	(assert
-		(menu-input (lowcase (read)))
-	)
+	(assert (menu-input (read)))
+)
+
+(defrule menu-input-lowcase
+	"Make sure input is lowercased."
+	?s <- (menu-input ?input & : (symbolp ?input))
+=>
+	(retract ?s)
+	(assert (menu-input-lowcase (lowcase ?input)))
 )
 
 
 (defrule menu-input-valid
 	"Validate user input on main menu."
-	?s <-
-		(menu-input ?input
+	?s <- (menu-input-lowcase ?input
 			& explore
 			| recommend
 			| check
 			| query
 			| exit
-		)
+			)
 =>
 	(retract ?s)
 	(assert (menu ?input))
@@ -187,14 +110,16 @@
 
 (defrule menu-input-invalid
 	"Invalid user input on the main menu. Reprompt."
-	?s <-
-		(menu-input ?input
+	(or 
+		?s <- (menu-input-lowcase ?input
 			& ~explore
 			& ~recommend
 			& ~check
 			& ~query
 			& ~exit
-		)
+			)
+		?s <- (menu-input ?input & ~: (symbolp ?input))
+	)
 =>
 	(retract ?s)
 	(printout t
@@ -202,9 +127,7 @@
 		crlf vtab "(Press enter to continue...)"
 	)
 	(get-char t)
-	(assert
-		(main menu)
-	)
+	(assert (show-menu))
 )
 
 

@@ -9,7 +9,7 @@
 
 (defmodule EXPLORE 
 	"Explore module discovers user preferences through user interrogation."
-	(import MAIN ?ALL)
+	(import MAIN deftemplate initial-fact current-user)
 )
 
 

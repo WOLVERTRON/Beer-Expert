@@ -10,8 +10,7 @@
 ;)
 
 
-
-(deftemplate MAIN::user
+(deftemplate MAIN::current-user
 
 	(multislot name
 		(type SYMBOL)
@@ -20,10 +19,10 @@
 
 	(slot age
 		(type INTEGER)
-		(range 0 120)
+		(range 0 130)
 	)
-
 )
+
 
 (deftemplate MAIN::beer
 	(multislot name

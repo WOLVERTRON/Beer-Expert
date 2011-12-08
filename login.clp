@@ -67,7 +67,6 @@
 	)
 =>
 	(retract ?s)
-	(pop-focus)
 	(assert (current-user (name $?name) (age ?age)))
 	(printout t
 		crlf "Welcome, " (implode$ $?name) "!"
