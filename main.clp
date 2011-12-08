@@ -12,7 +12,7 @@
 )
 
 
-(defrule main-intro
+(defrule MAIN::main-intro
 	"Explain to user what the Beer Expert system is."
 
 =>
@@ -137,6 +137,7 @@
 =>
 	(retract ?s)
 	(focus EXPLORE)
+	(assert (show-menu))
 )
 
 

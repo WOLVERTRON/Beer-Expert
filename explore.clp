@@ -9,7 +9,8 @@
 
 (defmodule EXPLORE 
 	"Explore module discovers user preferences through user interrogation."
-	(import MAIN deftemplate initial-fact current-user)
+	(import MAIN deftemplate initial-fact)
+	(import MAIN deftemplate current-user)
 )
 
 
@@ -59,15 +60,24 @@
 		"Which category would you like to explore?" crlf
 	)
 	(assert 
-		(explore-menu-input (lowcase (read)))
+		(explore-menu-input (read))
 	)	
+)
+
+
+(defrule explore-menu-input-lowcase
+    "Make sure input is lowercased."
+    ?s <- (explore-menu-input ?input & : (symbolp ?input))
+=>
+    (retract ?s)
+    (assert (explore-menu-input-lowcase (lowcase ?input)))
 )
 
 
 (defrule explore-menu-input-valid
 	"Validate user input on the explore menu."
 	?s <- 
-		(explore-menu-input ?input 
+		(explore-menu-input-lowcase ?input 
 				& style 
 				| appearance 
 				| aroma 
@@ -84,8 +94,8 @@
 
 (defrule explore-menu-input-invalid
 	"Invalid user input on the explore menu. Reprompt."
-	?s <-
-		(explore-menu-input ?input
+	(or
+		?s <- (explore-menu-input-lowcase ?input
 			& ~style
 			& ~appearance
 			& ~aroma
@@ -93,16 +103,17 @@
 			& ~flavor
 			& ~origin
 			& ~exit
-		)
+			)
+		?s <- (explore-menu-input ?input & ~: (symbolp ?input))
+	)
 =>
 	(retract ?s)
 	(printout t
 		crlf vtab "I'm sorry,\"" ?input "\" is not an option, please try again."
 		crlf vtab "(Press enter to continue...)"
 	)
-	(assert
-		(explore menu)
-	)	
+	(get-char t)
+	(assert (explore menu))	
 )
 
 
@@ -115,7 +126,7 @@
 		crlf
 		"TODO: Explore style! Returning to explore menu..."
 		crlf
-	)
+	)(get-char t)
 	(assert
 		(explore menu)
 	)
@@ -131,7 +142,7 @@
 		crlf
 		"TODO: Explore appearance! Returning to explore menu..."
 		crlf
-	)
+	)(get-char t)
 	(assert
 		(explore menu)
 	)
@@ -147,7 +158,7 @@
 		crlf
 		"TODO: Explore aroma! Returning to explore menu..."
 		crlf
-	)
+	)(get-char t)
 	(assert
 		(explore menu)
 	)
@@ -163,7 +174,7 @@
 		crlf
 		"TODO: Explore flavor! Returning to explore menu..."
 		crlf
-	)
+	)(get-char t)
 	(assert
 		(explore menu)
 	)
@@ -179,7 +190,7 @@
 		crlf
 		"TODO: Explore palate! Returning to explore menu..."
 		crlf
-	)
+	)(get-char t)
 	(assert
 		(explore menu)
 	)
@@ -195,7 +206,7 @@
 		crlf
 		"TODO: Explore origin! Returning to explore menu..."
 		crlf
-	)
+	)(get-char t)
 	(assert
 		(explore menu)
 	)
@@ -207,10 +218,7 @@
 	?s <- (explore exit)
 =>
 	(retract ?s)
-	(focus MAIN)
-	(assert
-		(main menu)
-	)
+	(pop-focus)
 )
 
 
