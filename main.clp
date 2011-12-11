@@ -7,6 +7,17 @@
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; Global(s)
+;; ============================================================================
+
+(defglobal 
+	?*priority-interrupt* = 100
+	?*min-age* = 0
+	?*legal-age* = 21
+	?*max-age* = 120
+)
+
+
 (defmodule MAIN
 	(export ?ALL)
 )
@@ -19,7 +30,7 @@
 ;; Rule(s)
 ;; ============================================================================
 
-(defrule MAIN::main-intro
+(defrule intro
 	"Explain to user what the Beer Expert system is."
 
 =>
@@ -57,10 +68,10 @@
 (defrule show-main-menu
 	"Display main menu options for user, and process input."
 
-	?s <- (show-main-menu)
+	?cmd <- (show-main-menu)
 =>
 	(system clear)
-	(retract ?s)
+	(retract ?cmd)
 	(printout t
         crlf "                                 .:.      .:.         .:.             "
         crlf "                               _oOoOo   _oOoOo       oOoOo_           "
@@ -91,66 +102,28 @@
 
 (defrule menu-input-lowcase
 	"Lowercase user input."
-	?s <- (menu-input ?input & : (symbolp ?input))
+	?inp <- (main-menu-input ?input & : (symbolp ?input))
 =>
-	(retract ?s)
-	(assert (menu-input-lowcase (lowcase ?input)))
+	(retract ?inp)
+	(assert (main-menu (lowcase ?input)))
 )
 
 
-(defrule menu-input-valid
-	"Validate user input on main menu."
-	?s <- (menu-input-lowcase ?input
-			& explore
-			| recommend
-			| check
-			| query
-			| exit
-			)
-=>
-	(retract ?s)
-	(assert (menu ?input))
-)
-
-
-(defrule menu-input-invalid
-	"Invalid user input on the main menu. Reprompt."
-	(or 
-		?s <- (menu-input-lowcase ?input
-			& ~explore
-			& ~recommend
-			& ~check
-			& ~query
-			& ~exit
-			)
-		?s <- (menu-input ?input & ~: (symbolp ?input))
-	)
-=>
-	(retract ?s)
-	(printout t
-		crlf vtab "I'm sorry, \"" ?input "\" is not an option, please try again."
-		crlf vtab "(Press enter to continue...)"
-	)
-	(get-char t)
-	(assert (show-menu))
-)
-
-
-(defrule menu-explore
+(defrule main-menu-explore
 	"User wishes to begin explore phase."
-	?s <- (menu explore)
+	?cmd <- (main-menu explore)
 =>
-	(retract ?s)
+	(retract ?cmd)
 	(focus EXPLORE)
-	(assert (show-menu))
+	(assert (show-explore-menu))
 )
 
 
-(defrule menu-exit
+(defrule main-menu-exit
 	"User wishes to exit program."
-	?s <- (menu exit)
+	?cmd <- (main-menu exit)
 =>
-	(retract ?s)
+	(retract ?cmd)
 	(printout t	crlf vtab "Goodbye, and thanks for using the BEER EXPERT!"
 				crlf vtab
 	)

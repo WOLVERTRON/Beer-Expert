@@ -8,6 +8,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defmodule RECOMMEND
+	(import MAIN defglobal ?ALL)
 	(import MAIN deftemplate initial-fact)
 )
 
@@ -53,16 +54,16 @@
 )
 		
 
-(defrule RECOMMEND::rule001-under21
+(defrule RECOMMEND::under-legal-age
 	"Minors are not allowed to drink alcohol!"
     (user
-    	(age ?age &:(< ?age 21))
+    	(age ?age &:(< ?age ?*legal-age*))
         (name ?name)
     )
 =>
 	(printout t "The consumption of alcoholic beverages is illegal for "
-				"persons under the age of 21. As such, we can only "
-				"recommend non-alcoholic beers." crlf)
+				"persons under the age of " ?*legal-age* ". As such, we "
+				"can only recommend non-alcoholic beers." crlf)
    	(assert (recommend-type non-alcoholic))
 	(assert (recommend-beer Kaliber))
     (assert (recommend-beer St. Pauli N/A))
@@ -71,7 +72,7 @@
 )
 
 
-(defrule RECOMMEND::rule002-wine-drinker-likes-belgian
+(defrule RECOMMEND::wine-drinkers-like-belgian
 	"Those who like wine may enjoy the flavor of Belgian beers."
     (likes (user $?user) (attribute wine))
 =>

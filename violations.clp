@@ -10,8 +10,19 @@
 (defmodule VIOLATIONS
 	"VIOLATIONS module contains interrupts to clean up user input."
 
+	; Globals
+	(import MAIN defglobal ?ALL)
+
+	; Templates we check for errors.
+	
+	; MAIN
+	(import MAIN deftemplate main-menu)
+	(import MAIN deftemplate main-menu-input)
+
+	; USER
 	(import USER deftemplate create-user)
-	(import LOGIN deftemplate create-user)
+
+	; LOGIN
 	(import LOGIN deftemplate login)
 )
 
@@ -26,7 +37,7 @@
 	?cmd <- (create-user 
 				(age ?age
 					& ~: (integerp ?age)
-					| ~: (<= 0 ?age 130)
+					| ~: (<= ?*min-age* ?age ?*max-age*)
 				)
 				(name ?name)
 			)
@@ -34,7 +45,9 @@
 	(retract ?cmd)
 	(printout t 
 		crlf "ERROR: Invalid age: \"" ?age "\"" 
-		crlf "Please enter a whole number between 0 and 130: ")
+		crlf "Please enter a whole number between " 
+		?*min-age* " and " ?*max-age* ": "
+	)
 	(assert (create-user (name ?name) (age (read))))
 )
 
@@ -46,7 +59,7 @@
 	?cmd <- (create-user
 				(name ?name
 					& ~: (stringp ?name)
-					| : (eq ?name "")
+					|  : (eq ?name "")
 				)
 				(age ?age)
 			)
@@ -84,4 +97,29 @@
 		(login (implode$ (explode$ (readline))))
 	)
 )
+
+
+;; Rule(s): MAIN Exceptions
+;; ============================================================================
+
+(defrule MAIN_main-menu_invalid-input
+	"Invalid user input on the main menu."
+	(or
+		?inp <- (main-menu ?input
+					& ~explore 
+					& ~recommend 
+					& ~query 
+					& ~exit
+				)
+		?inp <- (main-menu-input ?input & ~: (symbolp ?input))
+	)
+=>
+	(retract ?inp)
+	(printout t
+		crlf vtab "ERROR: \"" ?input "\" is not a menu option."
+		crlf tab "Please make another selection: "
+	)
+	(assert (main-menu-input (read)))
+)
+
 
