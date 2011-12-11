@@ -1,16 +1,23 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
-;;	FILE:		main.clp       
-;;	AUTHOR:     Chris Wolverton
+;;	FILE:	main.clp       
+;;	AUTHOR:	Chris Wolverton
 ;;
-;;  DESC:       Rules for the MAIN  module. Focused on driving application..
+;;	DESC:	Rules for the MAIN  module. Focused on driving application.
 ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defmodule MAIN
 	(export ?ALL)
 )
 
+
+;; Template(s)
+;; ============================================================================
+
+
+;; Rule(s)
+;; ============================================================================
 
 (defrule MAIN::main-intro
 	"Explain to user what the Beer Expert system is."
@@ -43,14 +50,14 @@
 	)
 	(focus LOGIN)
 	(get-char t)
-	(assert (show-menu))
+	(assert (show-main-menu))
 )
 
 
-(defrule show-menu
+(defrule show-main-menu
 	"Display main menu options for user, and process input."
 
-	?s <- (show-menu)
+	?s <- (show-main-menu)
 =>
 	(system clear)
 	(retract ?s)
@@ -61,7 +68,7 @@
         crlf "                                |||||    |||||       |||||            "
         crlf "                                ~~~~~    ~~~~~       ~~~~~            "
  		crlf "======================================================================"
- 		crlf "  M A I N   M E N U "
+ 		crlf "  M A I N   M E N U  "
  		crlf "======================================================================"
 		crlf vtab
 		crlf "[ Explore   ] - Answer exploratory questions to help discover your"
@@ -69,9 +76,6 @@
 		crlf
 		crlf "[ Recommend ] - Get recommendations for beer based on what we"
 		crlf "                currently know about your preferences."
-		crlf
-		crlf "[ Check     ] - Do your known preferences indicate you will enjoy a"
-		crlf "                particular beer? Check!"
 		crlf
 		crlf "[ Query     ] - Look up information on known beers and styles."
 		crlf
@@ -81,11 +85,12 @@
 		crlf vtab
 		crlf "Your choice? " crlf
 	)
-	(assert (menu-input (read)))
+	(assert (main-menu-input (read)))
 )
 
+
 (defrule menu-input-lowcase
-	"Make sure input is lowercased."
+	"Lowercase user input."
 	?s <- (menu-input ?input & : (symbolp ?input))
 =>
 	(retract ?s)
@@ -146,9 +151,8 @@
 	?s <- (menu exit)
 =>
 	(retract ?s)
-	(printout t
-		crlf vtab "Goodbye, and thanks for using the BEER EXPERT!"
-		crlf vtab
+	(printout t	crlf vtab "Goodbye, and thanks for using the BEER EXPERT!"
+				crlf vtab
 	)
 	(exit)
 )

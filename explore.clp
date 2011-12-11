@@ -43,7 +43,7 @@
         crlf "                                |||||    |||||       |||||            "
         crlf "                                ~~~~~    ~~~~~       ~~~~~            "
 		crlf "======================================================================"
-		crlf "  E X P L O R E   -   Add likes & dislikes!"
+		crlf "  E X P L O R E   -   Specify likes/dislikes in the following areas:"
 		crlf "======================================================================"
 		crlf vtab
 		crlf tab "[ Style      ] - The type of beer."
@@ -170,14 +170,18 @@
 	?s <- (explore flavor)
 =>
 	(retract ?s)
-	(printout t
-		crlf
-		"TODO: Explore flavor! Returning to explore menu..."
-		crlf
-	)(get-char t)
-	(assert
-		(explore menu)
-	)
+	(printout t 
+		crlf "Though we will maintain any preferences you wish, we recommend you pick from the following list: "
+		crlf vtab "sweet, acidic, bitter, acetic, sour, salty"
+		crlf vtab "(example: type \"like sweet, sour\")"
+	(assert (flavor-pref-input (read)))
+)
+
+
+(defrule flavor-pref-input-valid
+	?s <- (flavor-pref-input ?pref & : (symbolp ?pref))
+=>
+	(assert ((lowcase ?pref)
 )
 
 

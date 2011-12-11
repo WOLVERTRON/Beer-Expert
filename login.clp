@@ -1,4 +1,4 @@
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;;	FILE:   login.clp       
 ;;	AUTHOR: Chris Wolverton
@@ -9,151 +9,103 @@
 
 (defmodule LOGIN
 	"LOGIN module contains templates and rules related to user accounts."
-	(export ?ALL)
+
 	(import MAIN deftemplate initial-fact)
-	(import MAIN deftemplate current-user)
+	(import USER deftemplate user)
+	(import USER deftemplate create-user)
+
+	(export deftemplate current-user)
+	(export deftemplate login)
+	(export deftemplate create-user)
 )
 
 
-(deftemplate LOGIN::user
+;; Template(s)
+;; ============================================================================
 
-        (multislot name
-                (type SYMBOL)
-                (default ?NONE)
-        )
-
-        (slot age
-                (type INTEGER)
-                (range 0 130)
-        )
-
+(deftemplate current-user
+	(multislot name
+		(type SYMBOL)
+		(default ?NONE)
+	)
+	(slot age 
+		(type INTEGER)
+	)
 )
 
 
-(defrule LOGIN::init
-	"Load stored users, initiate login process."
+;; Rule(s)
+;; ============================================================================
+(defrule init
 =>
-	(assert (load-users) (login))
+	(assert (login-prompt))
 )
 
 
-(defrule LOGIN::load-users
-	"Load existing users into memory."
-	?s <- (load-users)
-=>
-	(retract ?s)
-	(load-facts users.dat)
-	(assert (users-loaded))
-)
-
-
-(defrule LOGIN::login
+(defrule login-prompt
 	"Prompt user for name, which corresponds to user account."
-	?s <- (login)
-	(users-loaded)
+	?cmd <- (login-prompt)
 =>
-	(retract ?s)
-	(printout t crlf vtab "What is your name? ")
-	(assert (input-name (explode$ (readline))))
+	(retract ?cmd)
+	(printout t crlf vtab "What is your login name?  ")
+	(assert (login (readline)))
 )
 
 
-(defrule LOGIN::login-valid
+(defrule login-match
 	"User exists, so load information."
-	?s <- (input-name $?name)
+	?cmd <- (login ?name)
 	(user
-		(name $?name)
+		(name ?name)
 		(age ?age)
 	)
 =>
-	(retract ?s)
-	(assert (current-user (name $?name) (age ?age)))
+	(retract ?cmd)
+	(assert (current-user (name ?name) (age ?age)))
 	(printout t
-		crlf "Welcome, " (implode$ $?name) "!"
+		crlf "Welcome, " ?name "!"
 		crlf vtab "(Press enter to continue...)"
 	)
 	(get-char t)
 )
 
 
-(defrule LOGIN::login-invalid
+(defrule login-unmatched
 	"User does not exist. Verify correct input."
-	(input-name $?name)
-	(not (user (name $?name)))
+	(login ?name)
+	(not (user (name ?name)))
 =>
 	(printout t
-		crlf vtab "The user \"" (implode$ $?name) "\" does not exist."
+		crlf vtab "The user \"" ?name "\" does not exist."
 		crlf "Would you like to create this account (yes/no)? "
 	)
 	(assert (create-account (lowcase (read))))
 )
 
 
-(defrule LOGIN::create-account-no
+(defrule create-account-no
 	"User does not wish to create a new account. (i.e. They typo'd their name.)"
-	?s1 <- (create-account ~yes)
-	?s2 <- (input-name $?)
+	?inp <- (create-account ~yes)
+	?cmd <- (login ?)
 =>
-	(retract ?s1 ?s2)
-	(assert (login))
+	(retract ?inp ?cmd)
+	(assert (login-prompt))
 )
 
 
-(defrule LOGIN::create-account-yes
+(defrule create-account-yes
 	"User wishes to create an account."
-	(create-account yes)
-	(input-name $?name)
+	?inp <- (create-account yes)
+	?cmd <- (login ?name)
 =>
-	(assert (prompt-age))
+	(retract ?inp)
+	(printout t
+		crlf "Please enter your age: "
+	)
+	(assert 
+		(create-user (name ?name) (age (read)))
+	)
+	(focus VIOLATIONS USER)
 )
-
-
-(defrule LOGIN::prompt-age
-	"Prompt user for age."
-	?s <- (prompt-age)
-=>
-	(retract ?s)
-	(printout t crlf "Please enter your age: ")
-	(assert (input-age (read)))
-)
-
-
-(defrule LOGIN::input-age-valid
-	"User has entered in a real age."
-	?s <- (input-age ?age 
-		& : (integerp ?age)
-		& : (< 0 ?age 130)
-		)
-=>
-	(retract ?s)
-	(assert (input-age-valid ?age))
-)
-
-
-(defrule LOGIN::input-age-invalid
-	"User has entered an invalid age."
-	?s <- (input-age ?age
-		& ~: (integerp ?age)
-		| ~: (< 0 ?age 130)
-		)
-=>
-	(retract ?s)
-	(printout t "Invalid age input!")
-	(assert (prompt-age))
-)
-
-
-(defrule LOGIN::create-account-complete
-	"All user data collected. Create account."
-	?s1 <- (create-account yes)
-	?s2 <- (input-name $?name)
-	?s3 <- (input-age-valid ?age)
-=>
-	(retract ?s1 ?s2 ?s3)
-	(assert (user (name $?name) (age ?age)))
-	(save-facts users.dat)
-	(assert (input-name $?name)) ; Mimic valid login.
-)
-
 
 

@@ -1,15 +1,19 @@
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
-;;      FILE:	recommend.clp       
-;;      AUTHOR:	Chris Wolverton
+;;	FILE:	recommend.clp       
+;;	AUTHOR:	Chris Wolverton
 ;;
-;;		DESC:	Beer recommendation rules.
+;;	DESC:	Beer recommendation rules.
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defmodule RECOMMEND
+	(import MAIN deftemplate initial-fact)
+)
 
-(defmodule RECOMMEND)
 
+;; Template(s)
+;; ============================================================================
 
 (deftemplate RECOMMEND::bonus
 	(multislot user)
@@ -19,6 +23,9 @@
 	(slot modifier)
 )
 
+
+;; Rule(s)
+;; ============================================================================
 
 (defrule RECOMMEND::style-bonus
 	"Instantiate bonuses based on style for each qualifying beer."
@@ -47,20 +54,21 @@
 		
 
 (defrule RECOMMEND::rule001-under21
-        "Minors are not allowed to drink alcohol!"
-        (user
-                (age ?age &:(< ?age 21))
-                (name ?name)
-        )
-        =>
-        (printout t "The consumption of alcoholic beverages is illegal for persons under the age of 21. As such, we can only recommend non-alcoholic beers." crlf)
-        (assert (recommend-type non-alcoholic))
-        (assert (recommend-beer Kaliber))
-        (assert (recommend-beer St. Pauli N/A))
-        (assert (recommend-beer Clausthaler))
-        (assert (recommend-beer O'Doul's))
+	"Minors are not allowed to drink alcohol!"
+    (user
+    	(age ?age &:(< ?age 21))
+        (name ?name)
+    )
+=>
+	(printout t "The consumption of alcoholic beverages is illegal for "
+				"persons under the age of 21. As such, we can only "
+				"recommend non-alcoholic beers." crlf)
+   	(assert (recommend-type non-alcoholic))
+	(assert (recommend-beer Kaliber))
+    (assert (recommend-beer St. Pauli N/A))
+    (assert (recommend-beer Clausthaler))
+    (assert (recommend-beer O'Doul's))
 )
-
 
 
 (defrule RECOMMEND::rule002-wine-drinker-likes-belgian
