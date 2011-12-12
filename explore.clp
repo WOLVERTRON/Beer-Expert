@@ -120,17 +120,80 @@
 
 (defrule explore-style
 	"User wants to explore beer style preferences."
-	?s <- (explore style)
+	?cmd <- (explore style)
 =>
-	(retract ?s)
+	(retract ?cmd)
 	(printout t
-		crlf
-		"TODO: Explore style! Returning to explore menu..."
-		crlf
-	)(get-char t)
-	(assert
-		(explore menu)
+
+		crlf vtab "You will rate on the following scale:"
+		crlf tab "hate"
+		crlf tab "dislike"
+		crlf tab "neutral"
+		crlf tab "like"
+		crlf tab "love"
+
+		crlf vtab "There are many different beer styles. Here are a few:"
+
+		crlf tab "American Ale"
+		crlf tab tab "Red Ale, American Barleywine, American Black Ale,"
+		crlf tab tab "American Blonde Ale, American Brown Ale, American Dark Wheat Ale,"
+		crlf tab tab "Imperial IPA, Imperial Stout,"
+		crlf tab tab "American IPA, American Pale Ale, American Pale Wheat Ale,"
+		crlf tab tab "American Porter, American Stout, American Strong Ale,"
+		crlf tab tab "American Wild Ale, Pumpkin Ale, Rye Beer, Wheatwine"
+
+		crlf tab "Belgian"
+		crlf tab tab "Belgian Dark Ale, Belgian IPA, Belgian Pale Ale,"
+		crlf tab tab "Belgian Strong Dark Ale, Belgian Strong Pale Ale"
+		crlf tab tab "Dubbel, Faro, Flanders Oud Bruin, Flanders Red Ale"
+		crlf tab tab "Gueuze, Lambic, Quad, Saison, Tripel, Witbier"
+
+		crlf tab "English Ale"
+		crlf tab tab "Baltic Porter, Braggot, English Barleywine, English Bitter,"
+		crlf tab tab "English Brown Ale, English Dark Mild Ale, English IPA,"
+		crlf tab tab "English Pale Ale, English Pale Mild Ale, English Porter,"
+		crlf tab tab "English Stout, English Strong Ale, Oatmeal Stout, Old Ale,"
+		crlf tab tab "Russian Imperial Stout, Winter Warmer"
+
+		crlf tab "Finnish Ale"
+		crlf tab tab "Sahti"
+
+		crlf tab "German Ale"
+		crlf tab tab "Altbier, Berliner Weissbier, Dunkelweizen, Gose, Hefeweizen"
+		crlf tab tab "Kolsch, Kristalweizen, Roggenbier, Weizenbock"
+
+		crlf tab "Irish Ale"
+		crlf tab tab "Irish Dry Stout, Irish Red Ale"
+
+		crlf tab "Russian Ale"
+		crlf tab tab "Kvass"
+
+		crlf tab "Scottish Ale"
+		crlf tab tab "Scotch Ale, Scottish Gruit"
+
+		crlf tab "American Lager"
+		crlf tab tab "American Adjunct Lager, Red Lager," 
+		crlf tab tab "Imperial Pilsner, American Malt Liquor,"
+		crlf tab tab "American Pale Lager, Steam Beer, Light Lager, Low Alcohol Beer"
+
+		crlf tab "Czech Lager"
+		crlf tab tab "Czech Pilsener"
+		
+		crlf tab "European Lager"
+		crlf tab tab "Euro Dark Lager, Euro Pale Lager, Euro Strong Lager"
+
+		crlf tab "German Lager"
+		crlf tab tab "Bock, Doppelbock, Dortmunder, Eispock, German Pilsener,"
+		crlf tab tab "Keller Bier, Maibock, Marzen, Munich Dunkel Lager,"
+		crlf tab tab "Munich Helles Lager, Rauchbier, Schwarzbier, Vienna Lager"
+
+		crlf tab "Japanese Lager"
+		crlf tab tab "Happoshu, Japanese Rice Lager"
+
+		crlf tab "Hybrid"
+		crlf tab tab "Fruit, Vegetable, Herbed, Spiced, Smoked"
 	)
+	(get-char t)
 )
 
 
@@ -172,6 +235,14 @@
 =>
 	(retract ?cmd)
 	(printout t 
+
+		crlf vtab "You will rate on the following scale:"
+		crlf tab "hate"
+		crlf tab "dislike"
+		crlf tab "neutral"
+		crlf tab "like"
+		crlf tab "love"
+
 		crlf vtab "Beer flavor is typically broken down into the following categories:"
 		crlf tab "sweet"
 		crlf tab "acidic"
@@ -180,19 +251,14 @@
 		crlf tab "sour"
 		crlf tab "salty"
 
-		crlf vtab "You will rate particular properties on the following scale:"
-		crlf tab "hate"
-		crlf tab "dislike"
-		crlf tab "neutral"
-		crlf tab "like"
-		crlf tab "love"
-
 		crlf vtab "Please enter your feelings about particular flavors in the following way:"
-		crlf "(hate|dislike|neutral|like|love) flavor1 flavor2 etc."
+		crlf "(hate|dislike|neutral|like|love) category1 category2 ..."
+
 		crlf vtab "EXAMPLE:"
 		crlf tab "type \"like salty sweet\""
 		crlf tab "type \"love sour\""
 		crlf tab "type \"hate acetic\""
+
 		crlf vtab "Please enter your flavor preferences, or type \"done\"."
 	)
 	(assert (prompt-flavor-pref))
@@ -202,7 +268,7 @@
 (defrule prompt-flavor-pref
 	"Prompt user for flavor preferences."
 	?cmd <- (prompt-flavor-pref)
-	(not (flavor-pref-input done))
+	(not (flavor-pref-input $?))
 =>
 	(retract ?cmd)
 	(printout t
@@ -223,7 +289,7 @@
 				$?rest
 			)
 	(current-user (name ?name))
-;	(not (pref (category flavor) (user ?name) (property ?prop))
+	(not (pref (category flavor) (user ?name) (property ?prop)))
 =>
 	(retract ?inp)
 	(assert 
@@ -243,16 +309,20 @@
 
 (defrule remove-old-flavor-pref
 	"There is an old flavor preference for this particular property. Remove it!"
-	?inp <- (flavor-pref-input ?rating ?prop)
+	?inp <- (flavor-pref-input ?rating ?prop $?)
 	(current-user (name ?name))
-	?pref <- (pref (category flavor) (user ?name) (property ?prop))
+	?pref <- (pref 
+                (category flavor) 
+                (user ?name) 
+                (property ?prop)
+             )
 =>
 	(retract ?pref)
 )
 
 (defrule flavor-pref-input-list-processed
 	"Fully processed a list of flavor preferences, so clean up the hanging fact."
-	?inp <- (flavor-pref-input ~done)
+	?inp <- (flavor-pref-input ?last & ~done)
 =>
 	(retract ?inp)
 )

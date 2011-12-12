@@ -23,10 +23,9 @@
 		(type SYMBOL)
 	)
 
-	(multislot user
-		(type SYMBOL)
+	(slot user
+		(type STRING)
 		(default ?NONE)
-		(cardinality 1 ?VARIABLE)
 	)
 
 	(slot property
@@ -35,7 +34,7 @@
 	)
 
 	(slot rating
-		(type INTEGER)
+		(type SYMBOL)
 	)
 
 )

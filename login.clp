@@ -24,8 +24,8 @@
 ;; ============================================================================
 
 (deftemplate current-user
-	(multislot name
-		(type SYMBOL)
+	(slot name
+		(type STRING)
 		(default ?NONE)
 	)
 	(slot age 
