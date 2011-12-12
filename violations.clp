@@ -104,6 +104,7 @@
 
 (defrule MAIN_main-menu_invalid-input
 	"Invalid user input on the main menu."
+	(declare (auto-focus TRUE))
 	(or
 		?inp <- (main-menu ?input
 					& ~explore 

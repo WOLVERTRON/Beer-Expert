@@ -17,7 +17,7 @@
 ;; Template(s)
 ;; ============================================================================
 
-(deftemplate PREFS::pref
+(deftemplate pref
 
 	(slot category
 		(type SYMBOL)
@@ -44,7 +44,7 @@
 ;; Rule(s)
 ;; ============================================================================
 
-(defrule PREFS::init
+(defrule init
 	"Load stored user preferences."
 	(declare (auto-focus TRUE)
 )
@@ -52,7 +52,7 @@
 	(load-facts prefs.dat)
 )
 
-(defrule PREFS::save
+(defrule save
 	"Save user preferences."
 	?cmd <- (save-prefs)
 	

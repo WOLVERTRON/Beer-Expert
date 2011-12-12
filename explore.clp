@@ -10,7 +10,8 @@
 (defmodule EXPLORE 
 	"Explore module discovers user preferences through user interrogation."
 	(import MAIN deftemplate initial-fact)
-	(import MAIN deftemplate current-user)
+	(import LOGIN deftemplate current-user)
+	(import PREFS deftemplate pref)
 )
 
 
@@ -167,22 +168,106 @@
 
 (defrule explore-flavor
 	"User wants to explore beer flavor preferences."
-	?s <- (explore flavor)
+	?cmd <- (explore flavor)
 =>
-	(retract ?s)
+	(retract ?cmd)
 	(printout t 
-		crlf "Though we will maintain any preferences you wish, we recommend you pick from the following list: "
-		crlf vtab "sweet, acidic, bitter, acetic, sour, salty"
-		crlf vtab "(example: type \"like sweet, sour\")"
-	(assert (flavor-pref-input (read)))
+		crlf vtab "Beer flavor is typically broken down into the following categories:"
+		crlf tab "sweet"
+		crlf tab "acidic"
+		crlf tab "bitter"
+		crlf tab "acetic"
+		crlf tab "sour"
+		crlf tab "salty"
+
+		crlf vtab "You will rate particular properties on the following scale:"
+		crlf tab "hate"
+		crlf tab "dislike"
+		crlf tab "neutral"
+		crlf tab "like"
+		crlf tab "love"
+
+		crlf vtab "Please enter your feelings about particular flavors in the following way:"
+		crlf "(hate|dislike|neutral|like|love) flavor1 flavor2 etc."
+		crlf vtab "EXAMPLE:"
+		crlf tab "type \"like salty sweet\""
+		crlf tab "type \"love sour\""
+		crlf tab "type \"hate acetic\""
+		crlf vtab "Please enter your flavor preferences, or type \"done\"."
+	)
+	(assert (prompt-flavor-pref))
+)
+
+
+(defrule prompt-flavor-pref
+	"Prompt user for flavor preferences."
+	?cmd <- (prompt-flavor-pref)
+	(not (flavor-pref-input done))
+=>
+	(retract ?cmd)
+	(printout t
+		crlf vtab "Input preferences: "
+	)
+	(assert 
+		(flavor-pref-input (explode$ (readline)))
+		(prompt-flavor-pref)
+	)
 )
 
 
 (defrule flavor-pref-input-valid
-	?s <- (flavor-pref-input ?pref & : (symbolp ?pref))
+	"User has input flavor preferences."
+	?inp <- (flavor-pref-input
+				?rating & hate | dislike | neutral | like | love
+				?prop & sweet | acidic | bitter | acetic | sour | salty
+				$?rest
+			)
+	(current-user (name ?name))
+;	(not (pref (category flavor) (user ?name) (property ?prop))
 =>
-	(assert ((lowcase ?pref)
+	(retract ?inp)
+	(assert 
+		(pref
+			(category flavor)
+			(user ?name)
+			(property ?prop)
+			(rating ?rating)
+		)
+		(flavor-pref-input
+			?rating
+			$?rest
+		)
+	)
 )
+
+
+(defrule remove-old-flavor-pref
+	"There is an old flavor preference for this particular property. Remove it!"
+	?inp <- (flavor-pref-input ?rating ?prop)
+	(current-user (name ?name))
+	?pref <- (pref (category flavor) (user ?name) (property ?prop))
+=>
+	(retract ?pref)
+)
+
+(defrule flavor-pref-input-list-processed
+	"Fully processed a list of flavor preferences, so clean up the hanging fact."
+	?inp <- (flavor-pref-input ~done)
+=>
+	(retract ?inp)
+)
+
+
+(defrule flavor-pref-input-done
+	"User is done with flavor preference input."
+	?inp <- (flavor-pref-input done)
+	?cmd <- (prompt-flavor-pref)
+=>
+	(retract ?inp ?cmd)
+)
+
+
+
 
 
 (defrule explore-palate

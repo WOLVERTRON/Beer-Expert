@@ -2,7 +2,6 @@
 (unwatch all)
 
 (load main.clp)
-;(load explore.clp)
 
 (load user.clp)
 (load beer.clp)
@@ -10,6 +9,8 @@
 
 (load login.clp)
 (load violations.clp)
+
+(load explore.clp)
 
 (reset)
 (run)
