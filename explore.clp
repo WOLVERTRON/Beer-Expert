@@ -50,6 +50,7 @@
 		crlf "  E X P L O R E   -   Specify likes/dislikes in the following areas:"
 		crlf "======================================================================"
 		crlf vtab
+		crlf tab "[ Beer       ] - Preferences for known beers."
 		crlf tab "[ Style      ] - The style, or type of beer."
 		crlf tab "[ Appearance ] - How a beer looks."
 		crlf tab "[ Aroma      ] - How a beer smells."
@@ -81,7 +82,8 @@
 	"Validate user input on the explore menu."
 	?inp <- 
 		(explore-menu ?input 
-				& style 
+				& beer
+				| style 
 				| appearance 
 				| aroma 
 				| palate 
@@ -101,6 +103,7 @@
 	(or
 		; Either they picked an invalid choice...
 		?inp <- (explore-menu ?input
+			& ~beer
 			& ~style
 			& ~appearance
 			& ~aroma
@@ -124,6 +127,33 @@
 )
 
 ; ----------------------------------------------------------------------------
+
+(defrule explore-beer
+	"User wants to explore beer preferences."
+	?cmd <- (explore beer)
+=>
+	(retract ?cmd)
+	(printout t
+		crlf vtab "Rating choices:"
+		crlf tab "hate, dislike, neutral, like, love"
+
+		crlf vtab "Beer choices:"
+        crlf tab "Pliny The Younger, The Abyss, Parabola, Coors Light,"
+		crlf tab "Blue Moon Belgian White, Guinness Extra Stout, etc."
+		crlf tab "(NOTE: Due to variety of brews, input not restricted!)"
+
+		crlf "Input as follows: [rating] [1 beer]"
+
+		crlf vtab "EXAMPLE(S):"
+		crlf tab "type \"like corona extra\""
+		crlf tab "type \"love franziskaner hefe-weisse dunkel\""
+		crlf tab "type \"hate miller light\""
+
+		crlf vtab "When you are finished, type \"done\"!"
+	)
+	(assert (prompt-pref beer))
+)
+
 
 (defrule explore-style
 	"User wants to explore beer style preferences."
@@ -370,7 +400,7 @@
 (defrule pref-splitable-input-valid
 	"User has input splitable preferences."
 	?inp <- (pref-input
-				?category & ~style & ~brewer
+				?category & ~style & ~brewer & ~beer
 				?rating & hate | dislike | neutral | like | love
 				?property
 				$?rest
@@ -398,7 +428,7 @@
 (defrule pref-non-splitable-input-valid
 	"User has input non-splitable preferences."
 	?inp <- (pref-input
-				?category & style | brewer
+				?category & style | brewer | beer
 				?rating & hate | dislike | neutral | like | love
 				$?property
 			)
@@ -420,7 +450,7 @@
 (defrule remove-old-pref-splitable
 	"There is an old preference for this particular property. Remove it!"
 	?inp <- (pref-input 
-				?category & ~brewer & ~style 
+				?category & ~brewer & ~style & ~beer
 				?rating 
 				?property 
 				$?rest
@@ -439,7 +469,7 @@
 (defrule remove-old-pref-non-splitable
 	"There is an old preference for this particular property. Remove it!"
 	?inp <- (pref-input 
-				?category & brewer | style 
+				?category & brewer | style | beer
 				?rating 
 				$?property 
 			)
