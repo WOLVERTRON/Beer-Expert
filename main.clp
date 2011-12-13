@@ -115,7 +115,11 @@
 =>
 	(retract ?cmd)
 	(focus EXPLORE)
-	(assert (show-explore-menu))
+	(assert 
+		(show-explore-menu)
+		(show-main-menu)
+	)
+	
 )
 
 
