@@ -47,12 +47,13 @@
 		crlf "  E X P L O R E   -   Specify likes/dislikes in the following areas:"
 		crlf "======================================================================"
 		crlf vtab
-		crlf tab "[ Style      ] - The type of beer."
+		crlf tab "[ Style      ] - The style, or type of beer."
 		crlf tab "[ Appearance ] - How a beer looks."
 		crlf tab "[ Aroma      ] - How a beer smells."
 		crlf tab "[ Palate     ] - How a beer feels."
 		crlf tab "[ Flavor     ] - How a beer tastes."
-		crlf tab "[ Origin     ] - Where a beer is from."
+		crlf tab "[ Region     ] - Beers made from a given area."
+		crlf tab "[ Brewer     ] - Beers made by certain breweries."
 		crlf
 		crlf "----------------------------------------------------------------------"
 		crlf
@@ -84,7 +85,8 @@
 				| aroma 
 				| palate 
 				| flavor 
-				| origin
+				| region
+				| brewer
 				| exit 
 		)
 =>
@@ -102,7 +104,8 @@
 			& ~aroma
 			& ~palate
 			& ~flavor
-			& ~origin
+			& ~region
+			& ~brewer
 			& ~exit
 			)
 		?s <- (explore-menu-input ?input & ~: (symbolp ?input))
@@ -117,6 +120,7 @@
 	(assert (explore menu))	
 )
 
+; ----------------------------------------------------------------------------
 
 (defrule explore-style
 	"User wants to explore beer style preferences."
@@ -124,116 +128,91 @@
 =>
 	(retract ?cmd)
 	(printout t
+		crlf vtab "Rating choices:"
+		crlf tab "hate, dislike, neutral, like, love"
 
-		crlf vtab "You will rate on the following scale:"
-		crlf tab "hate"
-		crlf tab "dislike"
-		crlf tab "neutral"
-		crlf tab "like"
-		crlf tab "love"
-
-		crlf vtab "There are many different beer styles. Here are a few:"
-
+		crlf vtab "Style choices:"
         crlf tab "Ale, Lager, IPA, Porter, Stout, Belgian, Amber,"
         crlf tab "Hefeweizen, Dunkelweizen, etc."
-        
-        crlf vtab "(+ many more, so we are letting this be free-form.)"
+		crlf tab "(NOTE: Due to variety of styles, input not restricted!)"
+
+		crlf "Input as follows: [rating] [1 style]"
+
+		crlf vtab "EXAMPLE(S):"
+		crlf tab "type \"like hefeweizen\""
+		crlf tab "type \"love dunkelweizen\""
+		crlf tab "type \"hate ipa\""
+
+		crlf vtab "When you are finished, type \"done\"!"
 	)
-	(assert (prompt-style-pref))
-)
-
-
-
-(defrule prompt-style-pref
-	"Prompt user for style preferences."
-	?cmd <- (prompt-style-pref)
-	(not (style-pref-input $?))
-=>
-	(retract ?cmd)
-	(printout t
-		crlf vtab "Input preferences: "
-	)
-	(assert 
-		(style-pref-input (explode$ (readline)))
-		(prompt-style-pref)
-	)
-)
-
-
-(defrule style-pref-input-valid
-	"User has input style preferences."
-	?inp <- (style-pref-input
-				?rating & hate | dislike | neutral | like | love
-				?style
-			)
-	(current-user (name ?name))
-	(not (pref (category style) (user ?name) (property ?style)))
-=>
-	(retract ?inp)
-	(assert 
-		(pref
-			(category style)
-			(user ?name)
-			(property ?style)
-			(rating ?rating)
-		)
-	)
-)
-
-
-(defrule remove-old-style-pref
-	"There is an old style preference for this particular property. Remove it!"
-	?inp <- (style-pref-input ?rating ?style)
-	(current-user (name ?name))
-	?pref <- (pref 
-                (category style) 
-                (user ?name) 
-                (property (implode$ ?style))
-             )
-=>
-	(retract ?pref)
-)
-
-
-(defrule style-pref-input-done
-	"User is done with style preference input."
-	?inp <- (style-pref-input done)
-	?cmd <- (prompt-style-pref)
-=>
-	(retract ?inp ?cmd)
-    (assert (explore menu))
+	(assert (prompt-pref style))
 )
 
 
 (defrule explore-appearance
 	"User wants to explore beer appearance preferences."
-	?s <- (explore appearance)
+	?cmd <- (explore appearance)
 =>
-	(retract ?s)
-	(printout t
-		crlf
-		"TODO: Explore appearance! Returning to explore menu..."
-		crlf
-	)(get-char t)
-	(assert
-		(explore menu)
+	(retract ?cmd)
+	(printout t 
+		crlf vtab "Rating choices:"
+		crlf tab "hate, dislike, neutral, like, love"
+
+		crlf vtab "Appearance choices:"
+		crlf tab "rocky, creamy, frothy, fizzy, clear, sparkling, normal, "
+		crlf tab "flat, cloudy, hazy, murky, muddy, particles,"
+		crlf tab "yellow, amber, orange, red, brown, black"
+
+		crlf "Input as follows: [rating] [multiple appearances]"
+
+		crlf vtab "EXAMPLE(S):"
+		crlf tab "type \"like creamy amber red\""
+		crlf tab "type \"love brown hazy black\""
+		crlf tab "type \"dislike particles orange\""
+
+		crlf vtab "When you are finished, type \"done\"!"
 	)
+	(assert (prompt-pref appearance))
 )
 
 
 (defrule explore-aroma
 	"User wants to explore beer aroma preferences."
-	?s <- (explore aroma)
+	?cmd <- (explore aroma)
 =>
-	(retract ?s)
-	(printout t
-		crlf
-		"TODO: Explore aroma! Returning to explore menu..."
-		crlf
-	)(get-char t)
-	(assert
-		(explore menu)
+	(retract ?cmd)
+	(printout t 
+		crlf vtab "Rating choices:"
+		crlf tab "hate, dislike, neutral, like, love"
+
+		crlf vtab "Aroma choices:"
+		crlf tab "bread, cookie, grain, hay, straw, cereal, toasted, roasted,"
+		crlf tab "burnt, nutty, molasses, caramel, chocolate, coffee,"
+		crlf tab "flowers, perfume, herbs, grass, pine, spruce, resin,"
+		crlf tab "citrus, grapefruit, orange, lemon, lime, yeasty, soap,"
+		crlf tab "earth, mold, meat, broth, banana, bubble-gum, grape,"
+		crlf tab "raisin, plum, prune, date, apple, pear, peach, pineapple,"
+		crlf tab "cherry, raspberry, cassis, wine, port, wood, cask, oak,"
+		crlf tab "smoke, tar, charcoal, soy, toffee, butter, butterscotch,"
+		crlf tab "honey, sugar, maple, syrup, coriander, ginger, allspice,"
+		crlf tab "nutmeg, clove, cinnamon, vanilla, pepper, licorice, cola,"
+		crlf tab "alcohol, dust, chalk, vegetable, corn, medicine, solvent,"
+		crlf tab "vinegar, sulfur, skunk"
+
+		crlf vtab "(NOTE: Due to variety of aromas, input not restricted!)"
+
+		crlf vtab "Input as follows: "
+		crlf tab "[rating] [multiple aromas]"
+
+		crlf vtab "EXAMPLE(S):"
+		crlf tab "type \"like nutty coffee earth\""
+		crlf tab "type \"love bread cookie toasted coriander\""
+		crlf tab "type \"dislike vinegar\""
+		crlf tab "type \"hate licorice\""
+
+		crlf vtab "When you are finished, type \"done\"!"
 	)
+	(assert (prompt-pref aroma))
 )
 
 
@@ -243,141 +222,109 @@
 =>
 	(retract ?cmd)
 	(printout t 
+		crlf vtab "Rating choices:"
+		crlf tab "hate, dislike, neutral, like, love"
 
-		crlf vtab "You will rate on the following scale:"
-		crlf tab "hate"
-		crlf tab "dislike"
-		crlf tab "neutral"
-		crlf tab "like"
-		crlf tab "love"
+		crlf vtab "Flavor choices:"
+		crlf tab "sweet, acidic, bitter, acetic, sour, salty"
 
-		crlf vtab "Beer flavor is typically broken down into the following categories:"
-		crlf tab "sweet"
-		crlf tab "acidic"
-		crlf tab "bitter"
-		crlf tab "acetic"
-		crlf tab "sour"
-		crlf tab "salty"
+		crlf vtab "(NOTE: If you expected different options, check aroma!)"
 
-		crlf vtab "Please enter your feelings about particular flavors in the following way:"
-		crlf "(hate|dislike|neutral|like|love) category1 category2 ..."
+		crlf vtab "Input as follows: "
+		crlf tab "[rating] [multiple flavors]"
 
-		crlf vtab "EXAMPLE:"
+		crlf vtab "EXAMPLE(S):"
 		crlf tab "type \"like salty sweet\""
 		crlf tab "type \"love sour\""
 		crlf tab "type \"hate acetic\""
 
-		crlf vtab "Please enter your flavor preferences, or type \"done\"."
+		crlf vtab "When you are finished, type \"done\"!"
 	)
-	(assert (prompt-flavor-pref))
+	(assert (prompt-pref flavor))
 )
-
-
-(defrule prompt-flavor-pref
-	"Prompt user for flavor preferences."
-	?cmd <- (prompt-flavor-pref)
-	(not (flavor-pref-input $?))
-=>
-	(retract ?cmd)
-	(printout t
-		crlf vtab "Input preferences: "
-	)
-	(assert 
-		(flavor-pref-input (explode$ (readline)))
-		(prompt-flavor-pref)
-	)
-)
-
-
-(defrule flavor-pref-input-valid
-	"User has input flavor preferences."
-	?inp <- (flavor-pref-input
-				?rating & hate | dislike | neutral | like | love
-				?prop & sweet | acidic | bitter | acetic | sour | salty
-				$?rest
-			)
-	(current-user (name ?name))
-	(not (pref (category flavor) (user ?name) (property ?prop)))
-=>
-	(retract ?inp)
-	(assert 
-		(pref
-			(category flavor)
-			(user ?name)
-			(property ?prop)
-			(rating ?rating)
-		)
-		(flavor-pref-input
-			?rating
-			$?rest
-		)
-	)
-)
-
-
-(defrule remove-old-flavor-pref
-	"There is an old flavor preference for this particular property. Remove it!"
-	?inp <- (flavor-pref-input ?rating ?prop $?)
-	(current-user (name ?name))
-	?pref <- (pref 
-                (category flavor) 
-                (user ?name) 
-                (property ?prop)
-             )
-=>
-	(retract ?pref)
-)
-
-(defrule flavor-pref-input-list-processed
-	"Fully processed a list of flavor preferences, so clean up the hanging fact."
-	?inp <- (flavor-pref-input ?last & ~done)
-=>
-	(retract ?inp)
-)
-
-
-(defrule flavor-pref-input-done
-	"User is done with flavor preference input."
-	?inp <- (flavor-pref-input done)
-	?cmd <- (prompt-flavor-pref)
-=>
-	(retract ?inp ?cmd)
-    (assert (explore menu))
-)
-
-
-
 
 
 (defrule explore-palate
 	"User wants to explore beer palate preferences."
-	?s <- (explore palate)
+	?cmd <- (explore palate)
 =>
-	(retract ?s)
-	(printout t
-		crlf
-		"TODO: Explore palate! Returning to explore menu..."
-		crlf
-	)(get-char t)
-	(assert
-		(explore menu)
+	(retract ?cmd)
+	(printout t 
+		crlf vtab "Rating choices:"
+		crlf tab "hate, dislike, neutral, like, love"
+
+		crlf vtab "Palate choices:"
+		crlf tab "light, medium, full, dry, watery, oily, creamy, syrupy,"
+		crlf tab "fizzy, lively, soft, flat, metallic, chalky, astringent,"
+		crlf tab "alcoholic"
+
+		crlf vtab "Input as follows: "
+		crlf tab "[rating] [multiple palates]"
+
+		crlf vtab "EXAMPLE(S):"
+		crlf tab "type \"like soft\""
+		crlf tab "type \"love full creamy\""
+		crlf tab "type \"hate astringent\""
+
+		crlf vtab "When you are finished, type \"done\"!"
 	)
+	(assert (prompt-pref palate))
 )
 
 
-(defrule explore-origin
-	"User wants to explore beer origin preferences."
-	?s <- (explore origin)
+(defrule explore-brewer
+	"User wants to explore beer brewery preferences."
+	?cmd <- (explore brewer)
 =>
-	(retract ?s)
-	(printout t
-		crlf
-		"TODO: Explore origin! Returning to explore menu..."
-		crlf
-	)(get-char t)
-	(assert
-		(explore menu)
+	(retract ?cmd)
+	(printout t 
+		crlf vtab "Rating choices:"
+		crlf tab "hate, dislike, neutral, like, love"
+
+		crlf vtab "Brewer choices:"
+		crlf tab "Deschutes Brewery, Goose Island Beer Co., "
+		crlf tab "Dogfish Head Craft Brewery, Lagunitas Brewing Co., etc."
+
+		crlf vtab "(NOTE: Due to variety of brewers, input not restricted!)"
+
+		crlf vtab "Input as follows: "
+		crlf tab "[rating] [1 brewer]"
+
+		crlf vtab "EXAMPLE(S):"
+		crlf tab "type \"like lagunitas brewing co.\""
+		crlf tab "type \"love rogue ales\""
+		crlf tab "type \"hate anheuser-busch inc.\""
+
+		crlf vtab "When you are finished, type \"done\"!"
 	)
+	(assert (prompt-pref brewer))
+)
+
+
+(defrule explore-region
+	"User wants to explore beer regional preferences."
+	?cmd <- (explore region)
+=>
+	(retract ?cmd)
+	(printout t 
+		crlf vtab "Rating choices:"
+		crlf tab "hate, dislike, neutral, like, love"
+
+		crlf vtab "Region choices:"
+		crlf tab "SoCal, PacNW, Midwest, East-coast, South, Mountain"
+		;crlf tab "Vegas" ; not really a region, but define availability?
+
+		crlf vtab "Input as follows: "
+		crlf tab "[rating] [multiple locations]"
+
+		crlf vtab "EXAMPLE(S):"
+		crlf tab "type \"like east-coast\""
+		crlf tab "type \"love socal pacnw\""
+		crlf tab "type \"dislike south\""
+
+		crlf vtab "When you are finished, type \"done\"!"
+	)
+	(assert (prompt-pref region))
 )
 
 
@@ -389,8 +336,123 @@
 	(pop-focus)
 )
 
+; ----------------------------------------------------------------------------
+
+(defrule prompt-pref
+	"Prompt user for preferences."
+	?cmd <- (prompt-pref ?category)
+	(not (pref-input $?))
+=>
+	(retract ?cmd)
+	(printout t crlf vtab ?category " preferences: ")
+	(assert 
+		(pref-input ?category (explode$ (readline)))
+		(prompt-pref ?category)
+	)
+)
 
 
+(defrule pref-splitable-input-valid
+	"User has input splitable preferences."
+	?inp <- (pref-input
+				?category & ~style & ~brewer
+				?rating & hate | dislike | neutral | like | love
+				?property
+				$?rest
+			)
+	(current-user (name ?name))
+	(not (pref (category ?category) (user ?name) (property ?property)))
+=>
+	(retract ?inp)
+	(assert 
+		(pref
+			(category ?category)
+			(user ?name)
+			(property ?property)
+			(rating ?rating)
+		)
+		(pref-input
+			?category
+			?rating
+			$?rest
+		)
+	)
+)
 
 
+(defrule pref-non-splitable-input-valid
+	"User has input non-splitable preferences."
+	?inp <- (pref-input
+				?category & style | brewer
+				?rating & hate | dislike | neutral | like | love
+				$?property
+			)
+	(current-user (name ?name))
+	(not (pref (category ?category) (user ?name) (property $?property)))
+=>
+	(retract ?inp)
+	(assert 
+		(pref
+			(category ?category)
+			(user ?name)
+			(property $?property)
+			(rating ?rating)
+		)
+	)
+)
+
+
+(defrule remove-old-pref-splitable
+	"There is an old preference for this particular property. Remove it!"
+	?inp <- (pref-input 
+				?category & ~brewer & ~style 
+				?rating 
+				?property 
+				$?rest
+			)
+	(current-user (name ?name))
+	?pref <- (pref 
+                (category ?category) 
+                (user ?name) 
+                (property ?property)
+             )
+=>
+	(retract ?pref)
+)
+
+
+(defrule remove-old-pref-non-splitable
+	"There is an old preference for this particular property. Remove it!"
+	?inp <- (pref-input 
+				?category & brewer | style 
+				?rating 
+				$?property 
+			)
+	(current-user (name ?name))
+	?pref <- (pref 
+                (category ?category) 
+                (user ?name) 
+                (property $?property)
+             )
+=>
+	(retract ?pref)
+)
+
+
+(defrule pref-input-list-processed
+	"Fully processed a list of preference input. Clean up empty list."
+	?inp <- (pref-input ?category ?rating & ~done) 
+=>
+	(retract ?inp)
+)
+
+
+(defrule pref-input-done
+	"User is done with preference input."
+	?inp <- (pref-input ? done)
+	?cmd <- (prompt-pref $?)
+=>
+	(retract ?inp ?cmd)
+    (assert (explore menu))
+)
 

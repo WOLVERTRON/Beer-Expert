@@ -28,7 +28,7 @@
 		(default ?NONE)
 	)
 
-	(slot property
+	(multislot property
 		(type SYMBOL)
 		(default ?NONE)
 	)
