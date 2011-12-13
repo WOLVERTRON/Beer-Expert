@@ -9,16 +9,15 @@
 
 (defmodule BEER
 	"BEER module contains templates and rules related to beer information." 
-	(import MAIN deftemplate initial-fact)
-	(export deftemplate beer)
-	(export deftemplate brewer)
+	(import MAIN deftemplate initial-fact)	
+	(export deftemplate beer brewer save-beer)
 )
 
 
 ;; Template(s)
 ;; ============================================================================
 
-(deftemplate BEER::beer
+(deftemplate beer
 
 	(multislot name
 		(type SYMBOL)
@@ -63,7 +62,7 @@
 
 
 
-(deftemplate BEER::brewer
+(deftemplate brewer
 
 	(multislot name
 		(type SYMBOL)
@@ -82,7 +81,7 @@
 ;; Rule(s)
 ;; ============================================================================
 
-(defrule BEER::init
+(defrule init
 	"Load stored beer, brewers."
 	(declare (auto-focus TRUE))
 
@@ -90,8 +89,9 @@
 	(load-facts beer.dat)
 )
 
-(defrule BEER::save
+(defrule save
 	"Save beers and brewers."
+	
 	?cmd <- (save-beer)
 =>
 	(retract ?cmd)

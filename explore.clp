@@ -9,9 +9,12 @@
 
 (defmodule EXPLORE 
 	"Explore module discovers user preferences through user interrogation."
-	(import MAIN deftemplate initial-fact)
-	(import LOGIN deftemplate current-user)
-	(import PREFS deftemplate pref)
+
+	(import MAIN	deftemplate initial-fact current-user)
+	(import PREFS	deftemplate pref save-prefs)
+	
+	; Error Checking
+	(export deftemplate pref-user-input pref-input)
 )
 
 
@@ -33,10 +36,10 @@
 (defrule explore-menu
 	"Display explore menu, informing user of options. Collect input."
 
-	?s <- (explore menu)
+	?cmd <- (explore menu)
 =>
 	(system clear)
-	(retract ?s)
+	(retract ?cmd)
 	(printout t
         crlf "                                 .:.      .:.         .:.             "
         crlf "                               _oOoOo   _oOoOo       oOoOo_           "
@@ -59,27 +62,25 @@
 		crlf
 		crlf tab "[ Exit       ] - Exit Explore, and return to Main menu."
 		crlf vtab
-		"Which category would you like to explore?" crlf
+		"Which category would you like to explore? " 
 	)
-	(assert 
-		(explore-menu-input (read))
-	)	
+	(assert (explore-menu-input (read)))	
 )
 
 
-(defrule explore-menu-input-lowcase
+(defrule explore-menu-lowcase-input
     "Make sure input is lowercased."
-    ?s <- (explore-menu-input ?input & : (symbolp ?input))
+    ?inp <- (explore-menu-input ?input & : (symbolp ?input))
 =>
-    (retract ?s)
-    (assert (explore-menu-input-lowcase (lowcase ?input)))
+    (retract ?inp)
+    (assert (explore-menu (lowcase ?input)))
 )
 
 
 (defrule explore-menu-input-valid
 	"Validate user input on the explore menu."
-	?s <- 
-		(explore-menu-input-lowcase ?input 
+	?inp <- 
+		(explore-menu ?input 
 				& style 
 				| appearance 
 				| aroma 
@@ -90,7 +91,7 @@
 				| exit 
 		)
 =>
-	(retract ?s)
+	(retract ?inp)
 	(assert (explore ?input))
 )
 
@@ -98,7 +99,8 @@
 (defrule explore-menu-input-invalid
 	"Invalid user input on the explore menu. Reprompt."
 	(or
-		?s <- (explore-menu-input-lowcase ?input
+		; Either they picked an invalid choice...
+		?inp <- (explore-menu ?input
 			& ~style
 			& ~appearance
 			& ~aroma
@@ -108,10 +110,11 @@
 			& ~brewer
 			& ~exit
 			)
-		?s <- (explore-menu-input ?input & ~: (symbolp ?input))
+		; ... or they didn't enter a symbol we could check.
+		?inp <- (explore-menu-input ?input & ~: (symbolp ?input))
 	)
 =>
-	(retract ?s)
+	(retract ?inp)
 	(printout t
 		crlf vtab "I'm sorry,\"" ?input "\" is not an option, please try again."
 		crlf vtab "(Press enter to continue...)"
@@ -330,9 +333,9 @@
 
 (defrule explore-exit
 	"User wishes to end the explore phase. Return them to main menu."
-	?s <- (explore exit)
+	?cmd <- (explore exit)
 =>
-	(retract ?s)
+	(retract ?cmd)
 	(pop-focus)
 )
 
@@ -341,14 +344,26 @@
 (defrule prompt-pref
 	"Prompt user for preferences."
 	?cmd <- (prompt-pref ?category)
+	(not (pref-user-input $?))
 	(not (pref-input $?))
 =>
 	(retract ?cmd)
-	(printout t crlf vtab ?category " preferences: ")
+	(printout t crlf tab "[" ?category "] preferences: ")
 	(assert 
-		(pref-input ?category (explode$ (readline)))
+		; (pref-user-input ?category (explode$ (readline)))
+		(pref-user-input ?category (readline))
+		; Continue asking for pref's in this category.
 		(prompt-pref ?category)
 	)
+)
+
+
+(defrule pref-lowcase-input
+	"Lowercase user preference input."
+	?inp <- (pref-user-input ?category ?input & : (stringp ?input))
+=>
+	(retract ?inp)
+	(assert (pref-input ?category (explode$ (lowcase ?input))))
 )
 
 
@@ -453,6 +468,7 @@
 	?cmd <- (prompt-pref $?)
 =>
 	(retract ?inp ?cmd)
-    (assert (explore menu))
+    (assert (save-prefs)(explore menu))
+	(focus VIOLATIONS PREFS)
 )
 

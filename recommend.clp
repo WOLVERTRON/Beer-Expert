@@ -28,7 +28,7 @@
 ;; Rule(s)
 ;; ============================================================================
 
-(defrule RECOMMEND::style-bonus
+(defrule style-bonus
 	"Instantiate bonuses based on style for each qualifying beer."
 	(bonus 
 		(user $?user) 
@@ -54,7 +54,7 @@
 )
 		
 
-(defrule RECOMMEND::under-legal-age
+(defrule under-legal-age
 	"Minors are not allowed to drink alcohol!"
     (user
     	(age ?age &:(< ?age ?*legal-age*))
@@ -72,7 +72,7 @@
 )
 
 
-(defrule RECOMMEND::wine-drinkers-like-belgian
+(defrule :wine-drinkers-like-belgian
 	"Those who like wine may enjoy the flavor of Belgian beers."
     (likes (user $?user) (attribute wine))
 =>

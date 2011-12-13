@@ -10,7 +10,7 @@
 (defmodule PREFS
 	"PREFS module contains templates and rules related to user preferences."
 	(import MAIN deftemplate initial-fact)
-	(export	deftemplate pref)
+	(export	deftemplate pref save-prefs)
 )
 
 

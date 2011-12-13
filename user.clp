@@ -9,11 +9,10 @@
 
 (defmodule USER
 	"USER module contains templates and rules related to user accounts."
-	(import MAIN deftemplate initial-fact)
-	(export deftemplate user)
 
-	; Exports for error checking.
-	(export deftemplate create-user)
+	(import MAIN deftemplate initial-fact)
+
+	(export deftemplate user create-user)
 )
 
 
@@ -59,6 +58,7 @@
 
 (defrule save-users
 	"Save user information."
+	
 	?cmd <-(save-users)
 =>
 	(retract ?cmd)
@@ -68,6 +68,7 @@
 
 (defrule create-user
 	"Create a new user account."
+	
 	?cmd <- (create-user (name ?name) (age ?age))
 =>
 	(retract ?cmd)

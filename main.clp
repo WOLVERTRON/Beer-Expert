@@ -10,11 +10,16 @@
 ;; Global(s)
 ;; ============================================================================
 
-(defglobal 
-	?*priority-interrupt* = 100
+(defglobal
+	 
+	?*priority-interrupt*	= 100
+	?*priority-file*		= 50
+	?*priority-command*		= 10
+	
 	?*min-age* = 0
 	?*legal-age* = 21
 	?*max-age* = 120
+	
 )
 
 
@@ -26,6 +31,15 @@
 ;; Template(s)
 ;; ============================================================================
 
+(deftemplate current-user
+	(slot name
+		(type STRING)
+		(default ?NONE)
+	)
+	(slot age 
+		(type INTEGER)
+	)
+)
 
 ;; Rule(s)
 ;; ============================================================================
@@ -131,5 +145,5 @@
 	(printout t	crlf vtab "Goodbye, and thanks for using the BEER EXPERT!"
 				crlf vtab
 	)
-	(exit)
+	(halt);(exit)
 )

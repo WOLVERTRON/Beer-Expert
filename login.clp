@@ -10,28 +10,16 @@
 (defmodule LOGIN
 	"LOGIN module contains templates and rules related to user accounts."
 
-	(import MAIN deftemplate initial-fact)
-	(import USER deftemplate user)
-	(import USER deftemplate create-user)
-
-	(export deftemplate current-user)
-	(export deftemplate login)
-	(export deftemplate create-user)
+	(import MAIN deftemplate initial-fact current-user)
+	(import USER deftemplate user create-user)
+	
+	; Error Checking
+	(export deftemplate login-input)
 )
 
 
 ;; Template(s)
 ;; ============================================================================
-
-(deftemplate current-user
-	(slot name
-		(type STRING)
-		(default ?NONE)
-	)
-	(slot age 
-		(type INTEGER)
-	)
-)
 
 
 ;; Rule(s)
@@ -48,9 +36,17 @@
 =>
 	(retract ?cmd)
 	(printout t crlf vtab "What is your login name?  ")
-	(assert (login (readline)))
+	(assert (login-input (readline)))
 )
 
+
+(defrule login-lowcase-input
+	"Lowercase user's login information for case insensitive user names."
+	?inp <- (login-input ?input & : (stringp ?input))
+=>
+	(retract ?inp)
+	(assert (login (lowcase ?input)))
+)
 
 (defrule login-match
 	"User exists, so load information."
@@ -99,12 +95,8 @@
 	?cmd <- (login ?name)
 =>
 	(retract ?inp)
-	(printout t
-		crlf "Please enter your age: "
-	)
-	(assert 
-		(create-user (name ?name) (age (read)))
-	)
+	(printout t	crlf "Please enter your age: ")
+	(assert (create-user (name ?name) (age (read))))
 	(focus VIOLATIONS USER)
 )
 

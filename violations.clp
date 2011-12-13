@@ -13,17 +13,19 @@
 	; Globals
 	(import MAIN defglobal ?ALL)
 
-	; Templates we check for errors.
+	; Templates used for input that we check for errors.
 	
 	; MAIN
-	(import MAIN deftemplate main-menu)
-	(import MAIN deftemplate main-menu-input)
+	(import MAIN deftemplate main-menu main-menu-input)
 
 	; USER
 	(import USER deftemplate create-user)
 
 	; LOGIN
-	(import LOGIN deftemplate login)
+	(import LOGIN deftemplate login-input)
+	
+	; EXPLORE
+	(import EXPLORE deftemplate pref-user-input pref-input)
 )
 
 
@@ -32,7 +34,7 @@
 
 (defrule USER_create-user_invalid-age
 	"User input for user's age is not valid."
-	(declare (auto-focus TRUE))
+	(declare (auto-focus TRUE)(salience ?*priority-interrupt*))
  
 	?cmd <- (create-user 
 				(age ?age
@@ -54,7 +56,7 @@
 
 (defrule USER_create-user_invalid-name
 	"User input for user's name is not valid."
-	(declare (auto-focus TRUE))
+	(declare (auto-focus TRUE)(salience ?*priority-interrupt*))
 
 	?cmd <- (create-user
 				(name ?name
@@ -82,9 +84,9 @@
 
 (defrule LOGIN_login_invalid-name
 	"User input for login name is not valid."
-	(declare (auto-focus TRUE))
+	(declare (auto-focus TRUE)(salience ?*priority-interrupt*))
 
-	?cmd <- (login ?name 
+	?cmd <- (login-input ?name 
 				& ~: (stringp ?name) 
 				|  : (eq ?name "")
 			)
@@ -93,9 +95,7 @@
 	(printout t
 		crlf "ERROR: Invalid login name: \"" ?name "\""
 		crlf "Please enter a valid name: ")
-	(assert
-		(login (implode$ (explode$ (readline))))
-	)
+	(assert (login-input (implode$ (explode$ (readline)))))
 )
 
 
@@ -104,7 +104,7 @@
 
 (defrule MAIN_main-menu_invalid-input
 	"Invalid user input on the main menu."
-	(declare (auto-focus TRUE))
+	(declare (auto-focus TRUE)(salience ?*priority-interrupt*))
 	(or
 		?inp <- (main-menu ?input
 					& ~explore 
@@ -124,3 +124,42 @@
 )
 
 
+;; Rule(s): EXPLORE Exceptions
+;; ============================================================================
+
+(defrule EXPLORE_pref-input_invalid
+	"User input for preferences is invalid."
+	(declare (auto-focus TRUE)(salience ?*priority-interrupt*))
+	?inp <- (pref-user-input ?category ?input & ~: (stringp ?input))
+=>
+	(retract ?inp)
+	(printout t
+		crlf vtab "ERROR: \"" ?input "\" is not a valid preference input."
+		crlf tab "Please enter valid preferences: "
+	)
+	(assert (pref-user-input ?category (readline)))
+)
+
+
+(defrule EXPLORE_pref-input_rating-invalid
+	"User input rating for preference is invalid."
+	(declare (auto-focus TRUE)(salience ?*priority-interrupt*))
+	?inp <- (pref-input
+				?category
+				?rating 
+					& ~hate 
+					& ~dislike 
+					& ~neutral 
+					& ~like 
+					& ~love
+				$?rest
+			)
+=>
+	(retract ?inp)
+	(printout t
+		crlf vtab "ERROR: \"" ?rating "\" is not a valid rating for "
+		crlf "\"" $?rest "\""
+		crlf tab "Please enter valid preferences: "
+	)
+	(assert (pref-user-input ?category (readline)))
+)
