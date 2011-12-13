@@ -155,22 +155,20 @@
 
 )
 
-; style bonus
+; under age => ONLY non-alcoholic
+; style => beer score bonus
+; aroma => beer score bonus
+; appearance => beer score bonus
+; flavor => beer score bonus
+; palate => beer score bonus
+; brewer => beer score bonus
+; region => beer score bonus
+; beer => aroma/appearance/flavor/palate/brewer/region/style score bonus
+; 
 
-; under age
+; NEED TO ENCODE THIS KIND OF INFO BELOW! Perhaps in explore section...
+; or just wing it with flavor prefs for now? Or make explore rules that enforce
+; flavor prefs! Yes. Make a questionairre!
 
 ;(defrule :wine-drinkers-like-belgian
-;	"Those who like wine may enjoy the flavor of Belgian beers."
-;    (likes (user $?user) (attribute wine))
-;=>
-;	(assert
-;		(bonus
-;			(user $?user)
- ;           (reason wine-drinker)
-;			(category style)
- ;           (value belgian)
-  ;          (modifier 10)
-   ;     )
-    ;)
-;)
 
