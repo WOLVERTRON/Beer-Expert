@@ -8,9 +8,11 @@
 (load prefs.clp)
 
 (load login.clp)
+(load explore.clp)
+(load recommend.clp)
+
 (load violations.clp)
 
-(load explore.clp)
-
 (reset)
+
 (run)

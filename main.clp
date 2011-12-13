@@ -12,14 +12,22 @@
 
 (defglobal
 	 
+	; Salience
 	?*priority-interrupt*	= 100
 	?*priority-file*		= 50
 	?*priority-command*		= 10
-	
-	?*min-age* = 0
-	?*legal-age* = 21
-	?*max-age* = 120
-	
+
+	; Age related constants.
+	?*min-age* 		= 0
+	?*legal-age* 	= 21
+	?*max-age* 		= 120
+
+	; Score modifiers
+	?*hate*		= -10
+	?*dislike*	=  -3
+	?*neutral*	=   0
+	?*like* 	=   3
+	?*love* 	=  10
 )
 
 
@@ -132,8 +140,18 @@
 	(assert 
 		(show-explore-menu)
 		(show-main-menu)
-	)
-	
+	)	
+)
+
+
+(defrule main-menu-recommend
+	"User wishes to begin recommendation phase."
+	?cmd <- (main-menu recommend)
+=>
+	(retract ?cmd)
+	(focus RECOMMEND)
+
+	(printout t "DO STUFF NOW!")
 )
 
 

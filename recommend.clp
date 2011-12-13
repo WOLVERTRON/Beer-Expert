@@ -9,81 +9,168 @@
 
 (defmodule RECOMMEND
 	(import MAIN defglobal ?ALL)
-	(import MAIN deftemplate initial-fact)
+	(import MAIN deftemplate initial-fact current-user)
+	(import BEER deftemplate beer brewer)
+	(import PREFS deftemplate pref)
 )
 
 
 ;; Template(s)
 ;; ============================================================================
 
-(deftemplate RECOMMEND::bonus
-	(multislot user)
-	(multislot reason)
+(deftemplate score
+	(slot id (default-dynamic (gensym*)))
 	(slot category)
-	(multislot value)
-	(slot modifier)
+	(multislot property)
+	(slot score (type INTEGER))
 )
-
 
 ;; Rule(s)
 ;; ============================================================================
 
-(defrule style-bonus
-	"Instantiate bonuses based on style for each qualifying beer."
-	(bonus 
-		(user $?user) 
-		(reason $?reason) 
-		(category style)
-		(value $?style)
-		(modifier ?mod)
-	)
-	(beer
-		(name $?beer)
-		(style $?style)
+(defrule gen-scores_pref-hate
+	"Genereate scores for preferences rated hate."
+	(current-user (name ?user))
+	(pref
+		(rating hate)
+		(user ?user)
+		(category ?category)
+		(property $?property)
 	)
 =>
 	(assert
-		(bonus
-			(user $?user)
-			(reason $?reason)
-			(category beer)
-			(value $?beer)
-			(modifier ?mod)
+		(score
+			(category ?category)
+			(property $?property)
+			(score ?*hate*)
 		)
 	)
 )
-		
 
-(defrule under-legal-age
-	"Minors are not allowed to drink alcohol!"
-    (user
-    	(age ?age &:(< ?age ?*legal-age*))
-        (name ?name)
-    )
-=>
-	(printout t "The consumption of alcoholic beverages is illegal for "
-				"persons under the age of " ?*legal-age* ". As such, we "
-				"can only recommend non-alcoholic beers." crlf)
-   	(assert (recommend-type non-alcoholic))
-	(assert (recommend-beer Kaliber))
-    (assert (recommend-beer St. Pauli N/A))
-    (assert (recommend-beer Clausthaler))
-    (assert (recommend-beer O'Doul's))
-)
-
-
-(defrule :wine-drinkers-like-belgian
-	"Those who like wine may enjoy the flavor of Belgian beers."
-    (likes (user $?user) (attribute wine))
+(defrule gen-scores_pref-dislike
+	"Genereate scores for preferences rated dislike."
+	(current-user (name ?user))
+	(pref
+		(rating dislike)
+		(user ?user)
+		(category ?category)
+		(property $?property)
+	)
 =>
 	(assert
-		(bonus
-			(user $?user)
-            (reason wine-drinker)
-			(category style)
-            (value belgian)
-            (modifier 10)
-        )
-    )
+		(score
+			(category ?category)
+			(property $?property)
+			(score ?*dislike*)
+		)
+	)
 )
+
+
+(defrule gen-scores_pref-neutral
+	"Genereate scores for preferences rated neutral."
+	(current-user (name ?user))
+	(pref
+		(rating neutral)
+		(user ?user)
+		(category ?category)
+		(property $?property)
+	)
+=>
+	(assert
+		(score
+			(category ?category)
+			(property $?property)
+			(score ?*neutral*)
+		)
+	)
+)
+
+
+(defrule gen-scores_pref-like
+	"Genereate scores for preferences rated like."
+	(current-user (name ?user))
+	(pref
+		(rating like)
+		(user ?user)
+		(category ?category)
+		(property $?property)
+	)
+=>
+	(assert
+		(score
+			(category ?category)
+			(property $?property)
+			(score ?*like*)
+		)
+	)
+)
+
+
+(defrule gen-scores_pref-love
+	"Genereate scores for preferences rated love."
+	(current-user (name ?user))
+	(pref
+		(rating love)
+		(user ?user)
+		(category ?category)
+		(property $?property)
+	)
+=>
+	(assert
+		(score
+			(category ?category)
+			(property $?property)
+			(score ?*love*)
+		)
+	)
+)
+
+
+(defrule accumulate-scores
+	"Sum scores with the same category and property."
+	
+	?s1 <-	(score 
+				(id ?id1)
+				(category ?category) 
+				(property $?property) 
+				(score ?score1)
+			)
+			
+	?s2 <-	(score
+				(id ?id2 & ~?id1)
+				(category ?category)
+				(property $?property)
+				(score ?score2)
+			)
+=>
+	(retract ?s1 ?s2)
+	(assert
+		(score
+			(category ?category)
+			(property $?property)
+			(score (+ ?score1 ?score2))
+		)
+	)
+
+)
+
+; style bonus
+
+; under age
+
+;(defrule :wine-drinkers-like-belgian
+;	"Those who like wine may enjoy the flavor of Belgian beers."
+;    (likes (user $?user) (attribute wine))
+;=>
+;	(assert
+;		(bonus
+;			(user $?user)
+ ;           (reason wine-drinker)
+;			(category style)
+ ;           (value belgian)
+  ;          (modifier 10)
+   ;     )
+    ;)
+;)
 
