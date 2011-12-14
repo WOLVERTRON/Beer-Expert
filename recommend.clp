@@ -12,7 +12,7 @@
 	(import MAIN deftemplate initial-fact current-user)
 	(import BEER deftemplate beer brewer)
 	(import PREFS deftemplate pref)
-
+	(import EXPLORE deftemplate questionnaire-input)
 	(export deftemplate score)
 )
 
@@ -65,6 +65,7 @@
 	(factor-map		region2beer		.33)
 	(factor-map		region2brewer	.70)	
 	(factor-map		brewer2region	.15)
+	(factor-map		wine2belgian	.65)
 
 )
 
@@ -708,6 +709,368 @@
 	)
 )
 
-; NEED TO ENCODE THIS KIND OF INFO BELOW! Perhaps in explore section...
-;(defrule :wine-drinkers-like-belgian
 
+(defrule wine-drinkers-like-belgian-ales1
+	"People who like wine tend to like belgian style beers."
+	(calculate)
+	(pref
+		(user ?user)
+		(category flavor) 
+		(property wine)
+		(rating ?rating & neutral | like | love)
+	)
+	(beer
+		(style $?style
+				& : (eq $?style (create$ belgian dark ale))
+				| : (eq $?style (create$ belgian ipa))
+				| : (eq $?style (create$ belgian pale ale))
+				| : (eq $?style (create$ belgian strong dark ale))
+				| : (eq $?style (create$ belgian strong pale ale))
+				| : (eq $?style (create$ biere de champagne))
+				| : (eq $?style (create$ biere brut))
+				| : (eq $?style (create$ biere de champagne biere brut))
+				| : (eq $?style (create$ biere de garde))
+				| : (eq $?style (create$ dubbel))
+				| : (eq $?style (create$ faro))
+				| : (eq $?style (create$ flanders oud bruin))
+				| : (eq $?style (create$ flanders red ale))
+				| : (eq $?style (create$ gueuze))
+				| : (eq $?style (create$ lambic))
+				| : (eq $?style (create$ lambic fruit))
+				| : (eq $?style (create$ lambic unblended))
+				| : (eq $?style (create$ quad))
+				| : (eq $?style (create$ quadrupel))
+				| : (eq $?style (create$ saison))
+				| : (eq $?style (create$ farmhouse ale))
+				| : (eq $?style (create$ saison farmhouse ale))
+				| : (eq $?style (create$ tripel))
+				| : (eq $?style (create$ witbier))
+		)
+		(name $?beer)
+	)
+	(score-map ?rating ?score)
+	(factor-map wine2belgian ?factor)
+=>
+	(assert
+		(score
+			(category beer)
+			(property $?beer)
+			(score (* ?score ?factor))
+		)
+	)
+)
+
+
+(defrule wine-drinkers-like-belgian-ales2
+	"People who like wine tend to like belgian style beers."
+	(calculate)
+	(questionnaire-input wine yes)
+	(beer
+		(style $?style
+			& : (eq $?style (create$ belgian dark ale))
+			| : (eq $?style (create$ belgian ipa))
+			| : (eq $?style (create$ belgian pale ale))
+			| : (eq $?style (create$ belgian strong dark ale))
+			| : (eq $?style (create$ belgian strong pale ale))
+			| : (eq $?style (create$ biere de champagne))
+			| : (eq $?style (create$ biere brut))
+			| : (eq $?style (create$ biere de champagne biere brut))
+			| : (eq $?style (create$ biere de garde))
+			| : (eq $?style (create$ dubbel))
+			| : (eq $?style (create$ faro))
+			| : (eq $?style (create$ flanders oud bruin))
+			| : (eq $?style (create$ flanders red ale))
+			| : (eq $?style (create$ gueuze))
+			| : (eq $?style (create$ lambic))
+			| : (eq $?style (create$ lambic fruit))
+			| : (eq $?style (create$ lambic unblended))
+			| : (eq $?style (create$ quad))
+			| : (eq $?style (create$ quadrupel))
+			| : (eq $?style (create$ saison))
+			| : (eq $?style (create$ farmhouse ale))
+			| : (eq $?style (create$ saison farmhouse ale))
+			| : (eq $?style (create$ tripel))
+			| : (eq $?style (create$ witbier))
+		)
+		(name $?beer)
+	)
+	(score-map like ?score)
+	(factor-map wine2belgian ?factor)
+=>
+	(assert
+		(score
+			(category beer)
+			(property $?beer)
+			(score (* ?score ?factor))
+		)
+	)
+)
+
+
+(defrule wine-drinkers-like-belgian-ales-style1
+	"People who like wine tend to like belgian style beers."
+	(calculate)
+	(pref
+		(user ?user)
+		(category flavor) 
+		(property wine)
+		(rating ?rating & neutral | like | love)
+	)
+	(score-map ?rating ?score)
+	(factor-map wine2belgian ?factor)	
+=>	
+	(assert
+		(score
+			(category style)
+			(property belgian dark ale)
+			(score (* ?score ?factor))
+		)
+		(score
+			(category style)
+			(property belgian ipa)
+			(score (* ?score ?factor))
+		)
+		(score
+			(category style)
+			(property belgian pale ale)
+			(score (* ?score ?factor))
+		)
+		(score
+			(category style)
+			(property belgian strong dark ale)
+			(score (* ?score ?factor))
+		)
+		(score
+			(category style)
+			(property belgian strong pale ale)
+			(score (* ?score ?factor))
+		)
+		(score
+			(category style)
+			(property biere de champagne)
+			(score (* ?score ?factor))
+		)
+		(score
+			(category style)
+			(property biere brut)
+			(score (* ?score ?factor))
+		)
+		(score
+			(category style)
+			(property biere de champagne biere brut)
+			(score (* ?score ?factor))
+		)
+		(score
+			(category style)
+			(property biere de garde)
+			(score (* ?score ?factor))
+		)
+		(score
+			(category style)
+			(property dubbel)
+			(score (* ?score ?factor))
+		)
+		(score
+			(category style)
+			(property faro)
+			(score (* ?score ?factor))
+		)
+		(score
+			(category style)
+			(property flanders oud bruin)
+			(score (* ?score ?factor))
+		)
+		(score
+			(category style)
+			(property flanders red ale)
+			(score (* ?score ?factor))
+		)
+		(score
+			(category style)
+			(property gueuze)
+			(score (* ?score ?factor))
+		)
+		(score
+			(category style)
+			(property lambic)
+			(score (* ?score ?factor))
+		)
+		(score
+			(category style)
+			(property lambic fruit)
+			(score (* ?score ?factor))
+		)
+		(score
+			(category style)
+			(property lambic unblended)
+			(score (* ?score ?factor))
+		)
+		(score
+			(category style)
+			(property quad)
+			(score (* ?score ?factor))
+		)
+		(score
+			(category style)
+			(property quadrupel)
+			(score (* ?score ?factor))
+		)
+		(score
+			(category style)
+			(property saison)
+			(score (* ?score ?factor))
+		)
+		(score
+			(category style)
+			(property farmhouse ale)
+			(score (* ?score ?factor))
+		)
+		(score
+			(category style)
+			(property saison farmhouse ale)
+			(score (* ?score ?factor))
+		)
+		(score
+			(category style)
+			(property tripel)
+			(score (* ?score ?factor))
+		)
+		(score
+			(category style)
+			(property witbier)
+			(score (* ?score ?factor))
+		)
+	)
+)
+
+
+(defrule wine-drinkers-like-belgian-ales-style2
+	"People who like wine tend to like belgian style beers."
+	(calculate)
+	(questionnaire-input wine yes)
+	(score-map like ?score)
+	(factor-map wine2belgian ?factor)	
+=>	
+	(assert
+		(score
+			(category style)
+			(property belgian dark ale)
+			(score (* ?score ?factor))
+		)
+		(score
+			(category style)
+			(property belgian ipa)
+			(score (* ?score ?factor))
+		)
+		(score
+			(category style)
+			(property belgian pale ale)
+			(score (* ?score ?factor))
+		)
+		(score
+			(category style)
+			(property belgian strong dark ale)
+			(score (* ?score ?factor))
+		)
+		(score
+			(category style)
+			(property belgian strong pale ale)
+			(score (* ?score ?factor))
+		)
+		(score
+			(category style)
+			(property biere de champagne)
+			(score (* ?score ?factor))
+		)
+		(score
+			(category style)
+			(property biere brut)
+			(score (* ?score ?factor))
+		)
+		(score
+			(category style)
+			(property biere de champagne biere brut)
+			(score (* ?score ?factor))
+		)
+		(score
+			(category style)
+			(property biere de garde)
+			(score (* ?score ?factor))
+		)
+		(score
+			(category style)
+			(property dubbel)
+			(score (* ?score ?factor))
+		)
+		(score
+			(category style)
+			(property faro)
+			(score (* ?score ?factor))
+		)
+		(score
+			(category style)
+			(property flanders oud bruin)
+			(score (* ?score ?factor))
+		)
+		(score
+			(category style)
+			(property flanders red ale)
+			(score (* ?score ?factor))
+		)
+		(score
+			(category style)
+			(property gueuze)
+			(score (* ?score ?factor))
+		)
+		(score
+			(category style)
+			(property lambic)
+			(score (* ?score ?factor))
+		)
+		(score
+			(category style)
+			(property lambic fruit)
+			(score (* ?score ?factor))
+		)
+		(score
+			(category style)
+			(property lambic unblended)
+			(score (* ?score ?factor))
+		)
+		(score
+			(category style)
+			(property quad)
+			(score (* ?score ?factor))
+		)
+		(score
+			(category style)
+			(property quadrupel)
+			(score (* ?score ?factor))
+		)
+		(score
+			(category style)
+			(property saison)
+			(score (* ?score ?factor))
+		)
+		(score
+			(category style)
+			(property farmhouse ale)
+			(score (* ?score ?factor))
+		)
+		(score
+			(category style)
+			(property saison farmhouse ale)
+			(score (* ?score ?factor))
+		)
+		(score
+			(category style)
+			(property tripel)
+			(score (* ?score ?factor))
+		)
+		(score
+			(category style)
+			(property witbier)
+			(score (* ?score ?factor))
+		)
+	)
+)

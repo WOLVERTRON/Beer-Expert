@@ -14,7 +14,7 @@
 	(import PREFS	deftemplate pref save-prefs)
 	
 	; Error Checking
-	(export deftemplate pref-user-input pref-input)
+	(export deftemplate pref-user-input pref-input questionnaire-input)
 )
 
 
@@ -50,6 +50,11 @@
 		crlf "  E X P L O R E   -   Specify likes/dislikes in the following areas:"
 		crlf "======================================================================"
 		crlf vtab
+		crlf tab "[ questions       ] - Answer a few questions to kickstart"
+		crlf tab "                      your preference profile!"
+		crlf
+		crlf "----------------------------------------------------------------------"
+		crlf
 		crlf tab "[ Beer            ] - Preferences for known beers."
 		crlf tab "[ Style           ] - The style, or type of beer."
 		crlf tab "[ Head-Appearance ] - How a beer's head looks."
@@ -83,7 +88,8 @@
 	"Validate user input on the explore menu."
 	?inp <- 
 		(explore-menu ?input 
-				& beer
+				& questions
+				| beer
 				| style 
 				| head-appearance 
 				| body-appearance
@@ -105,6 +111,7 @@
 	(or
 		; Either they picked an invalid choice...
 		?inp <- (explore-menu ?input
+			& ~questions
 			& ~beer
 			& ~style
 			& ~head-appearance
@@ -127,6 +134,72 @@
 	)
 	(get-char t)
 	(assert (explore menu))	
+)
+
+; ----------------------------------------------------------------------------
+
+(defrule explore-questions
+	"User wants questions to start off their profile."
+	?cmd <- (explore questions)
+=>
+	(retract ?cmd)
+	(printout t
+		crlf vtab "Questionnaire"
+		crlf "---------------------------------------------------------"
+		crlf tab "Please answer all questions with yes or no."
+		crlf "---------------------------------------------------------"
+		crlf
+	)
+	
+	(printout t crlf "1.	Do you enjoy wine? ")
+	(assert (questionnaire-input wine (read)))
+
+	(printout t crlf "2.	Do you enjoy coffee? ")
+	(assert (questionnaire-input coffee (read)))
+	
+	(printout t crlf "3.	Do you enjoy spirits? ")
+	(assert (questionnaire-input spirits (read)))
+	
+	(printout t crlf "4.	Do you enjoy whiskey? ")
+	(assert (questionnaire-input whiskey (read)))
+	
+	(printout t crlf "5.	Do you enjoy scotch? ")
+	(assert (questionnaire-input scotch (read)))
+
+	(printout t crlf "6.	Do you enjoy citrus? ")
+	(assert (questionnaire-input citrus (read)))
+	
+	(printout t crlf "7.	Do you enjoy boozy drinks? ")
+	(assert (questionnaire-input boozy (read)))
+	
+	(printout t crlf "8.	Do you enjoy fruity drinks? ")
+	(assert (questionnaire-input fruity (read)))
+
+	(printout t crlf "9.	Do you enjoy mixed drinks? ")
+	(assert (questionnaire-input mixed-drinks (read)))
+
+	(printout t crlf "10.	Do you enjoy bitterness? ")
+	(assert (questionnaire-input bitter (read)))
+
+
+	(printout t 
+		crlf vtab "This concludes the questionnaire!"
+		crlf vtab "(Press enter to continue...)"		
+	)
+	(get-char t)
+	
+	;return to explore menu.
+	(assert (explore menu))
+
+)
+
+
+(defrule questionnaire-lowcase-input
+	"Lowercase questionnaire input."
+	?inp <- (questionnaire-input ?category ?input & : (stringp ?input))
+=>
+	(retract ?inp)
+	(assert (questionnaire-input ?category (lowcase ?input)))
 )
 
 ; ----------------------------------------------------------------------------

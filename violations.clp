@@ -164,3 +164,21 @@
 	)
 	(assert (pref-user-input ?category (readline)))
 )
+
+(defrule EXPLORE_questionnaire-input-invalid
+	"User input on questionnaire invalid."
+	(declare (auto-focus TRUE)(salience ?*priority-interrupt*))
+	?inp <- (questionnaire-input
+				?category
+				?rating 
+					& ~yes
+					& ~no
+			)
+=>
+	(retract ?inp)
+	(printout t
+		crlf vtab "ERROR: \"" ?rating "\" is not valid answer here!"
+		crlf tab "Please enter valid response (either yes or no): "
+	)
+	(assert (questionnaire-input ?category (read)))
+)
