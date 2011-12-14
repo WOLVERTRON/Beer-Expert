@@ -50,11 +50,13 @@
 
 (deffacts factor-mapping
 	"Maps a factor to it's value."
-	(factor-map 	brewer			.20)
-	(factor-map 	style			.30)
-	(factor-map 	aroma			.30)
+	(factor-map 	brewer			.30)
+	(factor-map 	style			.60)
+	(factor-map 	aroma			.50)
 	(factor-map 	appearance-head	.10)
 	(factor-map 	appearance-body	.20)
+	(factor-map 	flavor			.50)
+	(factor-map 	palate			.30)
 )
 
 (defmodule MAIN
@@ -176,7 +178,7 @@
 =>
 	(retract ?cmd)
 	(focus RECOMMEND)
-
+	(refresh RECOMMEND::init)
 	(printout t crlf vtab "DO STUFF NOW!" crlf vtab)
 )
 

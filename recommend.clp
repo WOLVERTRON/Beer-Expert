@@ -12,6 +12,7 @@
 	(import MAIN deftemplate initial-fact current-user score-map factor-map)
 	(import BEER deftemplate beer brewer)
 	(import PREFS deftemplate pref)
+
 )
 
 
@@ -28,8 +29,65 @@
 ;; Rule(s): Calculations
 ;; ============================================================================
 
+(defrule init
+	"Initialize scoring."
+	(declare (salience ?*priority-interrupt*))
+=>
+	(assert
+		(reset-scores)
+		(regen-scores)
+	)
+)
+
+(defrule reset-scores
+	"Eliminate all scores."
+	(declare (salience ?*priority-command*))
+	?cmd <- (reset-scores)
+	?s <- (score)
+=>
+	(retract ?s)
+)
+
+
+(defrule scores-reset
+	"All scores removed, kill command."
+	(declare (salience ?*priority-command*))
+	?cmd <- (reset-scores)
+	(not (score))
+=>
+	(retract ?cmd)
+)
+
+
+(defrule gen-scores
+	"Generate scores."
+	(declare (salience ?*priority-command*))
+	?cmd <- (regen-scores)
+	(not (reset-scores)) ; Can't fire until reset-scores is cleared.
+=>
+	(retract ?cmd)
+	(assert (calculate))
+	
+)
+
+
+(defrule regen-scores
+	"Regenerate scores."
+	(declare (salience ?*priority-command*))
+	?cmd <- (regen-scores)
+	(not (reset-scores)) ; Can't fire until reset-scores is cleared.
+	?calc <- (calculate)
+=>
+	(retract ?cmd ?calc)
+	(assert (calculate))
+	
+)
+
+
+
 (defrule gen-pref-scores
 	"Generate scores for preferences."
+	(calculate)
 	(current-user (name ?user))
 	(pref
 		(user ?user)
@@ -50,7 +108,7 @@
 
 (defrule accumulate-scores
 	"Sum scores with the same category and property."
-	
+	(calculate)
 	?s1 <-	(score 
 				(id ?id1)
 				(category ?category) 
@@ -81,6 +139,7 @@
 
 (defrule under-age_non-alcoholic-bonus
 	"Underaged persons should drink non-alcoholic beverages."
+	(calculate)
 	(current-user (age ?age & : (< ?age ?*legal-age*)))
 	(beer
 		(abv 0)
@@ -100,6 +159,7 @@
 
 (defrule under-age_alcoholic-malus
 	"Underaged person should not drink alcoholic berages."
+	(calculate)
 	(current-user (age ?age & : (< ?age ?*legal-age*)))	
 	(beer
 		(abv ?abv & :(< 0 ?abv))
@@ -119,6 +179,7 @@
 
 (defrule beer-to-brewer-modifier
 	"Liking a specific beer means they may like the brewery."
+	(calculate)
 	(current-user (name ?user))
 	(pref
 		(user ?user)
@@ -145,6 +206,7 @@
 
 (defrule beer-to-style-modifier
 	"Liking a specific beer means they may like the brew style."
+	(calculate)
 	(current-user (name ?user))
 	(pref
 		(user ?user)
@@ -171,6 +233,7 @@
 
 (defrule beer-to-aroma-modifier
 	"Liking a specific beer means they may like the aromas of this brew."
+	(calculate)
 	(current-user (name ?user))
 	(pref
 		(user ?user)
@@ -197,6 +260,7 @@
 
 (defrule beer-to-head-appearance-modifier
 	"Liking a specific beer means they may like the look of the brew head."
+	(calculate)
 	(current-user (name ?user))
 	(pref
 		(user ?user)
@@ -221,12 +285,84 @@
 )
 
 
+(defrule beer-to-body-appearance-modifier
+	"Liking a specific beer means they may like the look of the brew body."
+	(calculate)
+	(current-user (name ?user))
+	(pref
+		(user ?user)
+		(category beer)
+		(property $?beer)
+		(rating ?rating)
+	)
+	(beer
+		(name $?beer)
+		(appearance-body $? ?target $?)
+	)
+	(score-map ?rating ?score)
+	(factor-map ?cat & appearance-body ?factor)
+=>
+	(assert
+		(score
+			(category ?cat)
+			(property ?target)
+			(score (* ?score ?factor))
+		)
+	)
+)
 
 
-;		(appearance-body $? ?body $?)
-;	)
+(defrule beer-to-flavor-modifier
+	"Liking a specific beer means they may like individual flavors."
+	(calculate)
+	(current-user (name ?user))
+	(pref
+		(user ?user)
+		(category beer)
+		(property $?beer)
+		(rating ?rating)
+	)
+	(beer
+		(name $?beer)
+		(flavor $? ?target $?)
+	)
+	(score-map ?rating ?score)
+	(factor-map ?cat & flavor ?factor)
+=>
+	(assert
+		(score
+			(category ?cat)
+			(property ?target)
+			(score (* ?score ?factor))
+		)
+	)
+)
 
 
+(defrule beer-to-palate-modifier
+	"Liking a specific beer means they may like the palate components."
+	(calculate)
+	(current-user (name ?user))
+	(pref
+		(user ?user)
+		(category beer)
+		(property $?beer)
+		(rating ?rating)
+	)
+	(beer
+		(name $?beer)
+		(palate $? ?target $?)
+	)
+	(score-map ?rating ?score)
+	(factor-map ?cat & palate ?factor)
+=>
+	(assert
+		(score
+			(category ?cat)
+			(property ?target)
+			(score (* ?score ?factor))
+		)
+	)
 )
 
 
