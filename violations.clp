@@ -152,6 +152,7 @@
 					& ~neutral 
 					& ~like 
 					& ~love
+					& ~done
 				$?rest
 			)
 =>

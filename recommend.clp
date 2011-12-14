@@ -9,7 +9,7 @@
 
 (defmodule RECOMMEND
 	(import MAIN defglobal ?ALL)
-	(import MAIN deftemplate initial-fact current-user)
+	(import MAIN deftemplate initial-fact current-user score-map factor-map)
 	(import BEER deftemplate beer brewer)
 	(import PREFS deftemplate pref)
 )
@@ -22,110 +22,31 @@
 	(slot id (default-dynamic (gensym*)))
 	(slot category)
 	(multislot property)
-	(slot score (type INTEGER))
+	(slot score (type NUMBER))
 )
 
-;; Rule(s)
+;; Rule(s): Calculations
 ;; ============================================================================
 
-(defrule gen-scores_pref-hate
-	"Genereate scores for preferences rated hate."
+(defrule gen-pref-scores
+	"Generate scores for preferences."
 	(current-user (name ?user))
 	(pref
-		(rating hate)
 		(user ?user)
 		(category ?category)
 		(property $?property)
+		(rating ?rating)
 	)
+	(score-map ?rating ?score)
 =>
 	(assert
 		(score
 			(category ?category)
 			(property $?property)
-			(score ?*hate*)
+			(score ?score)
 		)
 	)
 )
-
-(defrule gen-scores_pref-dislike
-	"Genereate scores for preferences rated dislike."
-	(current-user (name ?user))
-	(pref
-		(rating dislike)
-		(user ?user)
-		(category ?category)
-		(property $?property)
-	)
-=>
-	(assert
-		(score
-			(category ?category)
-			(property $?property)
-			(score ?*dislike*)
-		)
-	)
-)
-
-
-(defrule gen-scores_pref-neutral
-	"Genereate scores for preferences rated neutral."
-	(current-user (name ?user))
-	(pref
-		(rating neutral)
-		(user ?user)
-		(category ?category)
-		(property $?property)
-	)
-=>
-	(assert
-		(score
-			(category ?category)
-			(property $?property)
-			(score ?*neutral*)
-		)
-	)
-)
-
-
-(defrule gen-scores_pref-like
-	"Genereate scores for preferences rated like."
-	(current-user (name ?user))
-	(pref
-		(rating like)
-		(user ?user)
-		(category ?category)
-		(property $?property)
-	)
-=>
-	(assert
-		(score
-			(category ?category)
-			(property $?property)
-			(score ?*like*)
-		)
-	)
-)
-
-
-(defrule gen-scores_pref-love
-	"Genereate scores for preferences rated love."
-	(current-user (name ?user))
-	(pref
-		(rating love)
-		(user ?user)
-		(category ?category)
-		(property $?property)
-	)
-=>
-	(assert
-		(score
-			(category ?category)
-			(property $?property)
-			(score ?*love*)
-		)
-	)
-)
-
 
 (defrule accumulate-scores
 	"Sum scores with the same category and property."
@@ -155,7 +76,160 @@
 
 )
 
-; under age => ONLY non-alcoholic
+;; Rule(s): Suggestions
+;; ============================================================================
+
+(defrule under-age_non-alcoholic-bonus
+	"Underaged persons should drink non-alcoholic beverages."
+	(current-user (age ?age & : (< ?age ?*legal-age*)))
+	(beer
+		(abv 0)
+		(name $?beer)
+	)
+	(score-map mega-bonus ?score)
+=>
+	(assert
+		(score 
+			(category beer)
+			(property $?beer)
+			(score ?score)
+		)
+	)
+)
+
+
+(defrule under-age_alcoholic-malus
+	"Underaged person should not drink alcoholic berages."
+	(current-user (age ?age & : (< ?age ?*legal-age*)))	
+	(beer
+		(abv ?abv & :(< 0 ?abv))
+		(name $?beer)
+	)
+	(score-map mega-malus ?score)
+=>
+	(assert
+		(score
+			(category beer)
+			(property $?beer)
+			(score ?score)
+		)
+	)
+)
+
+
+(defrule beer-to-brewer-modifier
+	"Liking a specific beer means they may like the brewery."
+	(current-user (name ?user))
+	(pref
+		(user ?user)
+		(category beer) 
+		(property $?beer)
+		(rating ?rating)
+	)
+	(beer
+		(name $?beer)
+		(brewer $?target)
+	)
+	(score-map ?rating ?score)
+	(factor-map ?cat & brewer ?factor)
+=>
+	(assert
+		(score
+			(category ?cat)
+			(property $?target)
+			(score (* ?score ?factor))
+		)
+	)
+)
+
+
+(defrule beer-to-style-modifier
+	"Liking a specific beer means they may like the brew style."
+	(current-user (name ?user))
+	(pref
+		(user ?user)
+		(category beer)
+		(property $?beer)
+		(rating ?rating)
+	)
+	(beer
+		(name $?beer)
+		(style $?target)
+	)
+	(score-map ?rating ?score)
+	(factor-map ?cat & style ?factor)
+=>
+	(assert
+		(score
+			(category ?cat)
+			(property $?target)
+			(score (* ?score ?factor))
+		)
+	)
+)
+
+
+(defrule beer-to-aroma-modifier
+	"Liking a specific beer means they may like the aromas of this brew."
+	(current-user (name ?user))
+	(pref
+		(user ?user)
+		(category beer)
+		(property $?beer)
+		(rating ?rating)
+	)
+	(beer
+		(name $?beer)
+		(aroma $? ?target $?)
+	)
+	(score-map ?rating ?score)
+	(factor-map ?cat & aroma ?factor)
+=>
+	(assert
+		(score
+			(category ?cat)
+			(property ?target)
+			(score (* ?score ?factor))
+		)
+	)
+)
+
+
+(defrule beer-to-head-appearance-modifier
+	"Liking a specific beer means they may like the look of the brew head."
+	(current-user (name ?user))
+	(pref
+		(user ?user)
+		(category beer)
+		(property $?beer)
+		(rating ?rating)
+	)
+	(beer
+		(name $?beer)
+		(appearance-head $? ?target $?)
+	)
+	(score-map ?rating ?score)
+	(factor-map ?cat & appearance-head ?factor)
+=>
+	(assert
+		(score
+			(category ?cat)
+			(property ?target)
+			(score (* ?score ?factor))
+		)
+	)
+)
+
+
+
+
+;		(appearance-body $? ?body $?)
+;	)
+
+
+)
+
+
 ; style => beer score bonus
 ; aroma => beer score bonus
 ; appearance => beer score bonus

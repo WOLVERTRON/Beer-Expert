@@ -1,7 +1,7 @@
 	(beer
-		(name Franziskaner Hefe-Weisse Dunkel)
-		(brewer Spaten-Franziskaner-Brau)
-		(style Dunkelweizen)
+		(name franziskaner hefe-weisse dunkel)
+		(brewer spaten-franziskaner-brau)
+		(style dunkelweizen)
 		(abv .05)
 		(serving-temp 45 50)
 		(aroma

@@ -23,13 +23,39 @@
 	?*max-age* 		= 120
 
 	; Score modifiers
-	?*hate*		= -10
-	?*dislike*	=  -3
-	?*neutral*	=   0
-	?*like* 	=   3
-	?*love* 	=  10
+;	?*score-hate*		=  -10
+;	?*score-dislike*	=   -3
+;	?*score-neutral*	=    0
+;	?*score-like* 		=    3
+;	?*score-love* 		=   10
+;	?*score-mega-bonus*	=  100
+;	?*score-mega-malus* = -100
+
 )
 
+(deffacts score-mapping
+	"Maps a score to it's value."
+	; Ratings
+	(score-map hate		-10)
+	(score-map dislike	 -3)
+	(score-map neutral	  0)
+	(score-map like		  3)
+	(score-map love		 10)
+	
+	; Bonus/Malus
+	(score-map mega-bonus  1000)
+	(score-map mega-malus -1000)
+	
+)
+
+(deffacts factor-mapping
+	"Maps a factor to it's value."
+	(factor-map 	brewer			.20)
+	(factor-map 	style			.30)
+	(factor-map 	aroma			.30)
+	(factor-map 	appearance-head	.10)
+	(factor-map 	appearance-body	.20)
+)
 
 (defmodule MAIN
 	(export ?ALL)
@@ -151,7 +177,7 @@
 	(retract ?cmd)
 	(focus RECOMMEND)
 
-	(printout t "DO STUFF NOW!")
+	(printout t crlf vtab "DO STUFF NOW!" crlf vtab)
 )
 
 

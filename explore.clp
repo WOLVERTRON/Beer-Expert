@@ -50,18 +50,19 @@
 		crlf "  E X P L O R E   -   Specify likes/dislikes in the following areas:"
 		crlf "======================================================================"
 		crlf vtab
-		crlf tab "[ Beer       ] - Preferences for known beers."
-		crlf tab "[ Style      ] - The style, or type of beer."
-		crlf tab "[ Appearance ] - How a beer looks."
-		crlf tab "[ Aroma      ] - How a beer smells."
-		crlf tab "[ Palate     ] - How a beer feels."
-		crlf tab "[ Flavor     ] - How a beer tastes."
-		crlf tab "[ Region     ] - Beers made from a given area."
-		crlf tab "[ Brewer     ] - Beers made by certain breweries."
+		crlf tab "[ Beer            ] - Preferences for known beers."
+		crlf tab "[ Style           ] - The style, or type of beer."
+		crlf tab "[ Head-Appearance ] - How a beer's head looks."
+		crlf tab "[ Body-Appearance ] - How a beer's body looks."
+		crlf tab "[ Aroma           ] - How a beer smells."
+		crlf tab "[ Palate          ] - How a beer feels."
+		crlf tab "[ Flavor          ] - How a beer tastes."
+		crlf tab "[ Region          ] - Beers made from a given area."
+		crlf tab "[ Brewer          ] - Beers made by certain breweries."
 		crlf
 		crlf "----------------------------------------------------------------------"
 		crlf
-		crlf tab "[ Exit       ] - Exit Explore, and return to Main menu."
+		crlf tab "[ Exit            ] - Exit Explore, and return to Main menu."
 		crlf vtab
 		"Which category would you like to explore? " 
 	)
@@ -84,7 +85,8 @@
 		(explore-menu ?input 
 				& beer
 				| style 
-				| appearance 
+				| head-appearance 
+				| body-appearance
 				| aroma 
 				| palate 
 				| flavor 
@@ -105,7 +107,8 @@
 		?inp <- (explore-menu ?input
 			& ~beer
 			& ~style
-			& ~appearance
+			& ~head-appearance
+			& ~body-appearance
 			& ~aroma
 			& ~palate
 			& ~flavor
@@ -166,8 +169,8 @@
 
 		crlf vtab "Style choices:"
         crlf tab "Ale, Lager, IPA, Porter, Stout, Belgian, Amber,"
-        crlf tab "Hefeweizen, Dunkelweizen, etc."
-		crlf tab "(NOTE: Due to variety of styles, input not restricted!)"
+        crlf tab "Hefeweizen, Dunkelweizen"
+		crlf tab "etc..."
 
 		crlf "Input as follows: [rating] [1 style]"
 
@@ -182,30 +185,59 @@
 )
 
 
-(defrule explore-appearance
-	"User wants to explore beer appearance preferences."
-	?cmd <- (explore appearance)
+(defrule explore-head-appearance
+	"User wants to explore beer head appearance preferences."
+	?cmd <- (explore head-appearance)
 =>
 	(retract ?cmd)
 	(printout t 
 		crlf vtab "Rating choices:"
 		crlf tab "hate, dislike, neutral, like, love"
 
-		crlf vtab "Appearance choices:"
-		crlf tab "rocky, creamy, frothy, fizzy, clear, sparkling, normal, "
-		crlf tab "flat, cloudy, hazy, murky, muddy, particles,"
-		crlf tab "yellow, amber, orange, red, brown, black"
+		crlf vtab "Head-Appearance choices:"
+		crlf tab "small, average, large, huge,"
+		crlf tab "rocky, creamy, frothy, fizzy, none,"
+		crlf tab "white, cream, tan, lacing, lasting, diminishing"
+		crlf tab "etc..."
 
 		crlf "Input as follows: [rating] [multiple appearances]"
 
 		crlf vtab "EXAMPLE(S):"
-		crlf tab "type \"like creamy amber red\""
+		crlf tab "type \"like average creamy\""
+		crlf tab "type \"love rocky\""
+		crlf tab "type \"dislike small none diminishing\""
+
+		crlf vtab "When you are finished, type \"done\"!"
+	)
+	(assert (prompt-pref head-appearance))
+)
+
+
+(defrule explore-body-appearance
+	"User wants to explore beer body appearance preferences."
+	?cmd <- (explore body-appearance)
+=>
+	(retract ?cmd)
+	(printout t 
+		crlf vtab "Rating choices:"
+		crlf tab "hate, dislike, neutral, like, love"
+
+		crlf vtab "Body-Appearance choices:"
+		crlf tab "clear, sparkling, normal, flat, cloudy, hazy, murky, muddy,"
+		crlf tab "particles, thin, average, thick, light, medium, dark, "
+		crlf tab "yellow, amber, orange, red, brown, black"
+		crlf tab "etc..."
+
+		crlf "Input as follows: [rating] [multiple appearances]"
+
+		crlf vtab "EXAMPLE(S):"
+		crlf tab "type \"like amber red\""
 		crlf tab "type \"love brown hazy black\""
 		crlf tab "type \"dislike particles orange\""
 
 		crlf vtab "When you are finished, type \"done\"!"
 	)
-	(assert (prompt-pref appearance))
+	(assert (prompt-pref body-appearance))
 )
 
 
