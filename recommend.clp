@@ -13,6 +13,7 @@
 	(import BEER deftemplate beer brewer)
 	(import PREFS deftemplate pref)
 
+	(export deftemplate score)
 )
 
 
@@ -62,7 +63,6 @@
 
 (defrule init
 	"Initialize scoring."
-;	(declare (salience ?*priority-interrupt*))
 =>
 	(assert
 		(reset-scores)
@@ -72,7 +72,6 @@
 
 (defrule reset-scores
 	"Eliminate all scores."
-;	(declare (salience ?*priority-command*))
 	?cmd <- (reset-scores)
 	?s <- (score)
 =>
@@ -82,7 +81,6 @@
 
 (defrule scores-reset
 	"All scores removed, kill command."
-;	(declare (salience ?*priority-command*))
 	?cmd <- (reset-scores)
 	(not (score))
 =>
@@ -92,26 +90,23 @@
 
 (defrule gen-scores
 	"Generate scores."
-;	(declare (salience ?*priority-command*))
 	?cmd <- (regen-scores)
 	(not (reset-scores)) ; Can't fire until reset-scores is cleared.
+	(not (calculate))
 =>
 	(retract ?cmd)
 	(assert (calculate))
-	
 )
 
 
 (defrule regen-scores
 	"Regenerate scores."
-;	(declare (salience ?*priority-command*))
 	?cmd <- (regen-scores)
 	(not (reset-scores)) ; Can't fire until reset-scores is cleared.
-	?calc <- (calculate)
+	?flag <- (calculate)
 =>
-	(retract ?cmd ?calc)
+	(retract ?cmd ?flag)
 	(assert (calculate))
-	
 )
 
 
@@ -166,60 +161,6 @@
 )
 
 
-;; Rule(s): Reporting
-;; ============================================================================
-
-(defrule get-highest-score
-	"Report the highest scoring property for the given category."
-	?cmd <- (get-highest-score ?category)
-	?p  <- (score
-				(category ?category)
-				(id ?id)
-				(score ?score1)
-				(property $?property1)
-			)
-	(not 
-		(score
-			(category ?category)
-			(score ?score2 & : (> ?score2 ?score1))
-		)
-	)
-=>
-	(retract ?cmd)
-	(assert (highest-score ?category ?score1 ?id))
-)
-
-(defrule tied-highest-score
-	"Once we know the highest score, search for matching scores."
-	?s <- (highest-score ?category ?score1 ?id1)
-	?tied <- (score 
-				(category ?category)
-				(id ?id2 & ~?id1)
-				(score ?score2 & : (= ?score2 ?score1))
-			 )
-=>
-	(assert (highest-score ?category ?score2 ?id2))
-)
-
-(defrule get-highest-score-all
-	"Call get-highest-score on all categories."
-	?cmd <- (get-highest-score-all)
-=>
-	(retract ?cmd)
-	(assert
-		(get-highest-score beer)
-		(get-highest-score brewer)
-		(get-highest-score region)
-		(get-highest-score style)
-		(get-highest-score appearance-head)
-		(get-highest-score appearance-body)
-		(get-highest-score aroma)
-		(get-highest-score flavor)
-		(get-highest-score palate)
-	)
-)
-
-(defrule combine-highest)
 ;; Rule(s): Suggestions
 ;; ============================================================================
 

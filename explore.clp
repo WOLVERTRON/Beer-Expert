@@ -38,7 +38,7 @@
 
 	?cmd <- (explore menu)
 =>
-	(system clear)
+	;(system clear)
 	(retract ?cmd)
 	(printout t
         crlf "                                 .:.      .:.         .:.             "

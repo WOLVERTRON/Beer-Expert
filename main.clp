@@ -16,6 +16,7 @@
 	?*priority-interrupt*	= 100
 	?*priority-file*		= 50
 	?*priority-command*		= 10
+	?*priority-done*		= -10
 
 	; Age related constants.
 	?*min-age* 		= 0
@@ -59,7 +60,7 @@
 	"Explain to user what the Beer Expert system is."
 
 =>
-	(system clear)
+	;(system clear)
 	(printout t	crlf vtab
 		crlf "======================================================================"
 		crlf "    B E E R   E X P E R T    -    version 1.0                         "
@@ -95,7 +96,7 @@
 
 	?cmd <- (show-main-menu)
 =>
-	(system clear)
+	;(system clear)
 	(retract ?cmd)
 	(printout t
         crlf "                                 .:.      .:.         .:.             "
@@ -152,9 +153,10 @@
 	?cmd <- (main-menu recommend)
 =>
 	(retract ?cmd)
-	(focus RECOMMEND)
 	(refresh RECOMMEND::init)
-	(printout t crlf vtab "DO STUFF NOW!" crlf vtab)
+	(refresh REPORT::init)
+	(focus RECOMMEND REPORT)
+	(assert (show-main-menu))
 )
 
 
