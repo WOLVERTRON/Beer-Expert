@@ -26,6 +26,7 @@
 		(reset-reports)
 		(regen-reports)
 	)
+	(refresh prompt-to-continue)
 )
 
 
@@ -148,6 +149,6 @@
 
 =>
 	(printout t crlf vtab "(Press enter to continue...)" )
-	(readline)
+	(get-char t)
 
 )

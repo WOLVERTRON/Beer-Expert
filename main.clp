@@ -60,7 +60,7 @@
 	"Explain to user what the Beer Expert system is."
 
 =>
-	;(system clear)
+	(system clear)
 	(printout t	crlf vtab
 		crlf "======================================================================"
 		crlf "    B E E R   E X P E R T    -    version 1.0                         "
@@ -96,7 +96,7 @@
 
 	?cmd <- (show-main-menu)
 =>
-	;(system clear)
+	S(system clear)
 	(retract ?cmd)
 	(printout t
         crlf "                                 .:.      .:.         .:.             "
@@ -108,14 +108,13 @@
  		crlf "  M A I N   M E N U  "
  		crlf "======================================================================"
 		crlf vtab
-		crlf "[ Explore   ] - Answer exploratory questions to help discover your"
-		crlf "                personal taste."
+		crlf "[ Explore   ] - Define your personal beer preferences."
 		crlf
 		crlf "[ Recommend ] - Get recommendations for beer based on what we"
 		crlf "                currently know about your preferences."
 		crlf
-		crlf "[ Query     ] - Look up information on known beers and styles."
-		crlf
+;		crlf "[ Query     ] - Look up information on known beers and styles."
+;		crlf
 		crlf "----------------------------------------------------------------------"
 		crlf
 		crlf "[ Exit      ] - Quit the Beer Expert."

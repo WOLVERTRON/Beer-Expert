@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; SHORT VERSION OF THE TEMPLATES!
+;; SHORT REFERENCE VERSION OF THE TEMPLATES!
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;	(deftemplate beer
 ;		(multislot name)
@@ -35,7 +35,7 @@
 )
 
 (brewer
-	(name brouwerij westvleteren)
+	(name westvleteren)
 	(region belgium)
 )
 
@@ -50,7 +50,7 @@
 )
 
 (brewer
-	(name brouwerij drie fonteinen)
+	(name fonteinen)
 	(region belgium)
 )
 
@@ -119,6 +119,22 @@
 	(region wisconsin united states)
 )
 
+(brewer 
+	(name bosteels)
+	(region belgium)
+)
+
+(brewer
+	(name kirin brewery company limited)
+	(region japan)
+)
+
+(brewer
+	(name terrapin beer company)
+	(region georgia united states)
+)
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; BEER
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -162,7 +178,7 @@
 
 (beer
 	(name trappist westvleteren 12)
-	(brewer brouwerij westvleteren)
+	(brewer westvleteren)
 	(style quad)
 	(abv .1020)
 	(appearance-body dark brown amber normal)
@@ -198,7 +214,7 @@
 
 (beer 
 	(name armand'4 oude geuze lente spring)
-	(brewer brouwerij drie fonteinen)
+	(brewer fonteinen)
 	(style gueuze)
 	(abv .0600)
 	(appearance-body hazy golden orange)
@@ -386,4 +402,38 @@
 	(palate creamy medium carbonation)
 )
 
+(beer
+	(name tripel karmeliet)
+	(brewer bosteels)
+	(style tripel)
+	(abv .0840)
+	(appearance-body clear golden)
+	(appearance-head large frothy)
+	(aroma citrus banana clove sweet malt bread spicy)
+	(flavor citrus banana sweet malt bread wheat spicy)
+	(palate crisp clean light)
+)
 
+(beer
+	(name kirin ichiban)
+	(brewer kirin brewery company limited)
+	(style american pale lager)
+	(abv .0500)
+	(appearance-body yellow)
+	(appearance-head medium)
+	(aroma sweet lemon grass corn)
+	(flavor nutty sweet skunk grain)
+	(palate light fizzy)
+)
+
+(beer
+	(name terrapin gamma ray)
+	(brewer terrapin beer company)
+	(style wheatwine)
+	(abv .1100)
+	(appearance-body amber)
+	(appearance-head minimal)
+	(aroma caramel bread banana spicy yeast)
+	(flavor caramel bread banana spicy yeast)
+	(palate smooth heavy medium)
+)

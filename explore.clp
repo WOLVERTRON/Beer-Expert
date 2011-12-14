@@ -38,7 +38,7 @@
 
 	?cmd <- (explore menu)
 =>
-	;(system clear)
+	(system clear)
 	(retract ?cmd)
 	(printout t
         crlf "                                 .:.      .:.         .:.             "
@@ -209,7 +209,7 @@
 
 		crlf vtab "When you are finished, type \"done\"!"
 	)
-	(assert (prompt-pref head-appearance))
+	(assert (prompt-pref appearance-head))
 )
 
 
@@ -237,7 +237,7 @@
 
 		crlf vtab "When you are finished, type \"done\"!"
 	)
-	(assert (prompt-pref body-appearance))
+	(assert (prompt-pref appearance-body))
 )
 
 

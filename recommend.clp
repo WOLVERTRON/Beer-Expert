@@ -31,30 +31,41 @@
 ;; ============================================================================
 
 (deffacts score-mapping
-	"Maps a score to it's value."
+	"Maps quantifies the rating scale."
 	; Ratings
-	(score-map 	hate		 -10.0)
-	(score-map 	dislike		  -5.0)
+	(score-map 	hate		 -15.0)	; "Reaction to unpleasant > great"
+	(score-map 	dislike		  -7.0)
 	(score-map 	neutral		   2.0) ; "It's okay"
 	(score-map 	like		   5.0)
 	(score-map 	love		  10.0)
 	
-	; Bonus/Malus
+	; SPECIAL Bonus/Malus
 	(score-map 	mega-bonus  1000.0)
 	(score-map 	mega-malus -1000.0)
 	
 )
 
 (deffacts factor-mapping
-	"Maps a factor to it's value."
-	(factor-map 	brewer			.40)
-	(factor-map 	style			.60)
-	(factor-map 	aroma			.50)
-	(factor-map 	appearance-head	.10)
-	(factor-map 	appearance-body	.30)
-	(factor-map 	flavor			.50)
-	(factor-map 	palate			.30)
-	(factor-map		region			.20)
+	"Maps a bonus factor from one property to another."
+	(factor-map 	beer2brewer		.40)
+	(factor-map 	brewer2beer		.55)
+	(factor-map 	beer2style		.65)
+	(factor-map 	style2beer		.55)
+	(factor-map 	beer2aroma		.60)
+	(factor-map 	aroma2beer		.40)
+	(factor-map 	beer2head		.10)
+	(factor-map 	head2beer		.10)
+	(factor-map 	beer2body		.30)
+	(factor-map 	body2beer		.20)
+	(factor-map 	beer2flavor		.50)
+	(factor-map		flavor2beer		.60)
+	(factor-map 	beer2palate		.30)
+	(factor-map 	palate2beer		.25)
+	(factor-map		beer2region		.20)
+	(factor-map		region2beer		.33)
+	(factor-map		region2brewer	.70)	
+	(factor-map		brewer2region	.15)
+
 )
 
 
@@ -219,11 +230,11 @@
 		(brewer $?target)
 	)
 	(score-map ?rating ?score)
-	(factor-map ?cat & brewer ?factor)
+	(factor-map beer2brewer ?factor)
 =>
 	(assert
 		(score
-			(category ?cat)
+			(category brewer)
 			(property $?target)
 			(score (* ?score ?factor))
 		)
@@ -250,11 +261,11 @@
 		(region $?target)
 	)
 	(score-map ?rating ?score)
-	(factor-map ?cat & region ?factor)
+	(factor-map beer2region ?factor)
 =>
 	(assert
 		(score
-			(category ?cat)
+			(category region)
 			(property $?target)
 			(score (* ?score ?factor))
 		)
@@ -277,11 +288,11 @@
 		(style $?target)
 	)
 	(score-map ?rating ?score)
-	(factor-map ?cat & style ?factor)
+	(factor-map beer2style ?factor)
 =>
 	(assert
 		(score
-			(category ?cat)
+			(category style)
 			(property $?target)
 			(score (* ?score ?factor))
 		)
@@ -304,11 +315,11 @@
 		(aroma $? ?target $?)
 	)
 	(score-map ?rating ?score)
-	(factor-map ?cat & aroma ?factor)
+	(factor-map beer2aroma ?factor)
 =>
 	(assert
 		(score
-			(category ?cat)
+			(category aroma)
 			(property ?target)
 			(score (* ?score ?factor))
 		)
@@ -316,7 +327,7 @@
 )
 
 
-(defrule beer-to-head-appearance-modifier
+(defrule beer-to-head-modifier
 	"Liking a specific beer means they may like the look of the brew head."
 	(calculate)
 	(current-user (name ?user))
@@ -331,11 +342,11 @@
 		(appearance-head $? ?target $?)
 	)
 	(score-map ?rating ?score)
-	(factor-map ?cat & appearance-head ?factor)
+	(factor-map beer2head ?factor)
 =>
 	(assert
 		(score
-			(category ?cat)
+			(category appearance-head)
 			(property ?target)
 			(score (* ?score ?factor))
 		)
@@ -343,7 +354,7 @@
 )
 
 
-(defrule beer-to-body-appearance-modifier
+(defrule beer-to-body-modifier
 	"Liking a specific beer means they may like the look of the brew body."
 	(calculate)
 	(current-user (name ?user))
@@ -358,11 +369,11 @@
 		(appearance-body $? ?target $?)
 	)
 	(score-map ?rating ?score)
-	(factor-map ?cat & appearance-body ?factor)
+	(factor-map beer2body ?factor)
 =>
 	(assert
 		(score
-			(category ?cat)
+			(category appearance-body)
 			(property ?target)
 			(score (* ?score ?factor))
 		)
@@ -385,11 +396,11 @@
 		(flavor $? ?target $?)
 	)
 	(score-map ?rating ?score)
-	(factor-map ?cat & flavor ?factor)
+	(factor-map beer2flavor ?factor)
 =>
 	(assert
 		(score
-			(category ?cat)
+			(category flavor)
 			(property ?target)
 			(score (* ?score ?factor))
 		)
@@ -412,11 +423,11 @@
 		(palate $? ?target $?)
 	)
 	(score-map ?rating ?score)
-	(factor-map ?cat & palate ?factor)
+	(factor-map beer2palate ?factor)
 =>
 	(assert
 		(score
-			(category ?cat)
+			(category palate)
 			(property ?target)
 			(score (* ?score ?factor))
 		)
@@ -424,19 +435,279 @@
 )
 
 
-; style => beer score bonus
-; aroma => beer score bonus
-; appearance => beer score bonus
-; flavor => beer score bonus
-; palate => beer score bonus
-; brewer => beer score bonus
-; region => beer score bonus
-; beer => aroma/appearance/flavor/palate/brewer/region/style score bonus
-; 
+(defrule brewer-to-beer-modifier
+	"Liking a brewer improves chances of liking any of their beer."
+	(calculate)
+	(current-user (name ?user))
+	(pref
+		(user ?user)
+		(category brewer)
+		(property $?brewer)
+		(rating ?rating)
+	)
+	(beer
+		(name $?beer)
+		(brewer $?brewer)
+	)
+	(score-map ?rating ?score)
+	(factor-map brewer2beer ?factor)
+=>
+	(assert
+			(score
+				(category beer)
+				(property ?beer)
+				(score (* ?score ?factor))
+			)
+	)
+)
+
+
+(defrule style-to-beer-modifier
+	"Liking a style improves chances of liking a beer in that style."
+	(calculate)
+	(current-user (name ?user))
+	(pref
+		(user ?user)
+		(category style)
+		(property $?style)
+		(rating ?rating)
+	)
+	(beer
+		(style $?style)
+		(name $?beer)
+	)
+	(score-map ?rating ?score)
+	(factor-map style2beer ?factor)
+=>
+	(assert
+			(score
+				(category beer)
+				(property ?beer)
+				(score (* ?score ?factor))
+			)
+	)
+)
+
+
+(defrule aroma-to-beer-modifier
+	"Liking an aroma improves chances of liking a utilizing beer."
+	(calculate)
+	(current-user (name ?user))
+	(pref
+		(user ?user)
+		(category aroma)
+		(property $?aroma)
+		(rating ?rating)
+	)
+	(beer
+		(aroma $? $?aroma $?)
+		(name $?beer)
+	)
+	(score-map ?rating ?score)
+	(factor-map aroma2beer ?factor)
+=>
+	(assert
+			(score
+				(category beer)
+				(property ?beer)
+				(score (* ?score ?factor))
+			)
+	)
+)
+
+
+(defrule head-to-beer-modifier
+	"Appearance of head pref's may affect opinion of a given beer."
+	(calculate)
+	(current-user (name ?user))
+	(pref
+		(user ?user)
+		(category appearance-head)
+		(property $?head)
+		(rating ?rating)
+	)
+	(beer
+		(appearance-head $? $?head $?)
+		(name $?beer)
+	)
+	(score-map ?rating ?score)
+	(factor-map head2beer ?factor)
+=>
+	(assert
+			(score
+				(category beer)
+				(property ?beer)
+				(score (* ?score ?factor))
+			)
+	)
+)
+
+
+(defrule body-to-beer-modifier
+	"Appearance of body pref's may affect opinion of a given beer."
+	(calculate)
+	(current-user (name ?user))
+	(pref
+		(user ?user)
+		(category appearance-body)
+		(property $?body)
+		(rating ?rating)
+	)
+	(beer
+		(appearance-body $? $?body $?)
+		(name $?beer)
+	)
+	(score-map ?rating ?score)
+	(factor-map body2beer ?factor)
+=>
+	(assert
+			(score
+				(category beer)
+				(property ?beer)
+				(score (* ?score ?factor))
+			)
+	)
+)
+
+
+(defrule flavor-to-beer-modifier
+	"opinion on flavors will impact beer enjoyment."
+	(calculate)
+	(current-user (name ?user))
+	(pref
+		(user ?user)
+		(category flavor)
+		(property $?flavor)
+		(rating ?rating)
+	)
+	(beer
+		(flavor $? $?flavor $?)
+		(name $?beer)
+	)
+	(score-map ?rating ?score)
+	(factor-map flavor2beer ?factor)
+=>
+	(assert
+			(score
+				(category beer)
+				(property ?beer)
+				(score (* ?score ?factor))
+			)
+	)
+)
+
+
+(defrule palate-to-beer-modifier
+	"opinion on palate will impact beer enjoyment."
+	(calculate)
+	(current-user (name ?user))
+	(pref
+		(user ?user)
+		(category palate)
+		(property $?palate)
+		(rating ?rating)
+	)
+	(beer
+		(flavor $? $?palate $?)
+		(name $?beer)
+	)
+	(score-map ?rating ?score)
+	(factor-map palate2beer ?factor)
+=>
+	(assert
+			(score
+				(category beer)
+				(property ?beer)
+				(score (* ?score ?factor))
+			)
+	)
+)
+
+
+(defrule region-to-beer-modifier
+	"Liking a region may cause a regional preference."
+	(calculate)
+	(current-user (name ?user))
+	(pref
+		(user ?user)
+		(category region) 
+		(property $?region)
+		(rating ?rating)
+	)
+	(brewer
+		(region $?region)
+		(name $?brewery)
+	)
+	(beer
+		(brewer $?brewery)
+		(name $?beer)
+	)
+	(score-map ?rating ?score)
+	(factor-map region2beer ?factor)
+=>
+	(assert
+		(score
+			(category beer)
+			(property $?beer)
+			(score (* ?score ?factor))
+		)
+	)
+)
+
+
+(defrule region-to-brewer-modifier
+	"Liking a region may cause a regional brewer preference."
+	(calculate)
+	(current-user (name ?user))
+	(pref
+		(user ?user)
+		(category region) 
+		(property $?region)
+		(rating ?rating)
+	)
+	(brewer
+		(region $?region)
+		(name $?brewery)
+	)
+	(score-map ?rating ?score)
+	(factor-map region2brewer ?factor)
+=>
+	(assert
+		(score
+			(category brewer)
+			(property $?brewery)
+			(score (* ?score ?factor))
+		)
+	)
+)
+
+
+(defrule brewer-to-region-modifier
+	"Liking a brewer may show a regional preference."
+	(calculate)
+	(current-user (name ?user))
+	(pref
+		(user ?user)
+		(category brewer) 
+		(property $?brewery)
+		(rating ?rating)
+	)
+	(brewer
+		(name $?brewery)
+		(region $?region)
+	)
+	(score-map ?rating ?score)
+	(factor-map brewer2region ?factor)
+=>
+	(assert
+		(score
+			(category region)
+			(property $?region)
+			(score (* ?score ?factor))
+		)
+	)
+)
 
 ; NEED TO ENCODE THIS KIND OF INFO BELOW! Perhaps in explore section...
-; or just wing it with flavor prefs for now? Or make explore rules that enforce
-; flavor prefs! Yes. Make a questionairre!
-
 ;(defrule :wine-drinkers-like-belgian
 
