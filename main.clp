@@ -33,31 +33,6 @@
 
 )
 
-(deffacts score-mapping
-	"Maps a score to it's value."
-	; Ratings
-	(score-map hate		-10)
-	(score-map dislike	 -3)
-	(score-map neutral	  0)
-	(score-map like		  3)
-	(score-map love		 10)
-	
-	; Bonus/Malus
-	(score-map mega-bonus  1000)
-	(score-map mega-malus -1000)
-	
-)
-
-(deffacts factor-mapping
-	"Maps a factor to it's value."
-	(factor-map 	brewer			.30)
-	(factor-map 	style			.60)
-	(factor-map 	aroma			.50)
-	(factor-map 	appearance-head	.10)
-	(factor-map 	appearance-body	.20)
-	(factor-map 	flavor			.50)
-	(factor-map 	palate			.30)
-)
 
 (defmodule MAIN
 	(export ?ALL)

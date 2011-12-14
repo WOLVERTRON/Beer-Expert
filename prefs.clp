@@ -29,7 +29,7 @@
 	)
 
 	(multislot property
-		(type SYMBOL)
+		;(type SYMBOL)
 		(default ?NONE)
 	)
 

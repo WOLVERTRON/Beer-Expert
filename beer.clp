@@ -20,7 +20,7 @@
 (deftemplate beer
 
 	(multislot name
-		(type SYMBOL)
+		;(type LEXEME)
 		(default ?NONE)
 		(cardinality 1 ?VARIABLE)
 	)

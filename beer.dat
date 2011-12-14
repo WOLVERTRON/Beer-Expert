@@ -1,42 +1,389 @@
-	(beer
-		(name franziskaner hefe-weisse dunkel)
-		(brewer spaten-franziskaner-brau)
-		(style dunkelweizen)
-		(abv .05)
-		(serving-temp 45 50)
-		(aroma
-			malt
-			wheat
-			banana
-			clove
-			ester
-			medicine
-			earth
-			yeast
-		)	
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; SHORT VERSION OF THE TEMPLATES!
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;	(deftemplate beer
+;		(multislot name)
+;		(multislot brewer)
+;		(multislot style)
+;		(slot abv)
+;		(multislot serving-temp) ; range: 40 45
+;		(multislot aroma)
+;		(multislot appearance-head)
+;		(multislot appearance-body)
+;		(multislot flavor)
+;		(multislot palate)
+;	)
+;
+;	(deftemplate brewer
+;		(multislot name)
+;		(multislot region)
+;	)
 
-		(appearance-head
-			tan
-			frothy
-		)
 
-		(appearance-body
-			brown
-			hazy
-		)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; BREWERS
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-		(flavor
-			dry
-			malt
-			wheat
-			clove
-			banana
-			ester
-		)
+(brewer
+	(name spaten-franziskaner-brau)
+	(region germany)
+)
 
-		(palate
-			dry
-			chalky
-		)
-	)
-			
+(brewer
+	(name russian river brewing co)
+	(region california united states)
+)
+
+(brewer
+	(name brouwerij westvleteren)
+	(region belgium)
+)
+
+(brewer
+	(name founders brewing co)
+	(region michigan united states)
+)
+
+(brewer
+	(name three floyds brewing co)
+	(region in indiana united states)
+)
+
+(brewer
+	(name brouwerij drie fonteinen)
+	(region belgium)
+)
+
+(brewer
+	(name coors brewing co)
+	(region colorado united states)
+)
+
+(brewer
+	(name guiness ltd)
+	(region ireland)
+)
+
+(brewer
+	(name anheuser-busch inc)
+	(region missouri united states)
+)
+
+(brewer
+	(name miller brewing co)
+	(region wisconsin united states)
+)
+
+(brewer
+	(name alaskan brewing co)
+	(region alaska united states)
+)
+
+(brewer
+	(name new belgium brewing)
+	(region colorado united states)
+)
+
+(brewer
+	(name grupo modelo)
+	(region mexico)
+)
+
+(brewer
+	(name stella artois)
+	(region belgium)
+)
+
+(brewer
+	(name heineken nederland)
+	(region netherlands)
+)
+
+(brewer 
+	(name coors brewing company)
+	(region colorado united states)
+)
+
+(brewer 
+	(name cerveceria cuauhtemoc moctezuma)
+	(region mexico)
+)
+
+(brewer 
+	(name deschutes brewery)
+	(region oregon united states)
+)
+
+(brewer 
+	(name new glarus brewing co)
+	(region wisconsin united states)
+)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; BEER
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(beer
+	(name franziskaner hefe-weisse dunkel)
+	(brewer spaten-franziskaner-brau)
+	(style dunkelweizen)
+	(abv .05)
+	(serving-temp 45 50)
+	(aroma malt wheat banana clove ester medicine earth yeast)	
+	(appearance-head tan frothy)
+	(appearance-body brown hazy)
+	(flavor dry malt wheat clove banana ester)
+	(palate dry chalky)
+)
+		
+(beer
+	(name pliny the younger)
+	(brewer russian river brewing co)
+	(style american double imperial ipa)
+	(abv .1100)
+	(appearance-head creamy)
+	(appearance-body hazy gold flat)
+	(aroma spicy pine citrus malt)
+	(flavor pine citrus pineapple grapefruit)
+	(palate dry oily flat)
+)
+
+(beer
+	(name pliny the elder)
+	(brewer russian river brewing co)
+	(style american double imperial ipa)
+	(abv .0800)
+	(appearance-head medium white)
+	(appearance-body pale gold)
+	(aroma hops grapefruit pine citrus)
+	(flavor citrus hops pine bitter malt floral)
+	(palate smooth syrupy medium lively)
+)
+
+(beer
+	(name trappist westvleteren 12)
+	(brewer brouwerij westvleteren)
+	(style quad)
+	(abv .1020)
+	(appearance-body dark brown amber normal)
+	(appearance-head fizzy carbonated)
+	(aroma dark fruit raisin fig grape caramel malt)
+	(flavor dark fruit raisin fig caramel sweet)
+	(palate full dry lively)
+)
+
+(beer
+	(name founders cbs imperial stout)
+	(brewer founders brewing co)
+	(style american double imperial stout)
+	(abv .1060)
+	(appearance-body dark mahogany brown)
+	(appearance-head small tan)
+	(aroma coffee maple roasted malt vanilla bourbon caramel)
+	(flavor coffee maple chocolate vanilla bourbon)
+	(palate soft full creamy)
+)
+
+(beer
+	(name vanilla bean aged dark lord)
+	(brewer three floyds brewing co)
+	(style russian imperial stout)
+	(abv .1300)
+	(appearance-body mahogany dark brown)
+	(appearance-head little)
+	(aroma chocolate cherry fruit vanilla coffee)
+	(flavor vanilla chocolate dark fruits licorice)
+	(palate syrupy thick low soft)
+)
+
+(beer 
+	(name armand'4 oude geuze lente spring)
+	(brewer brouwerij drie fonteinen)
+	(style gueuze)
+	(abv .0600)
+	(appearance-body hazy golden orange)
+	(aroma damp earth grass grapefruit hay)
+	(flavor citrus fresh fruit funky sour tart orange lemon)
+	(palate bubbly dry carbonated fizzy)
+)
+
+(beer
+	(name blue moon belgian white)
+	(brewer coors brewing co)
+	(style witbier)
+	(abv .0540)
+	(appearance-body golden orange)
+	(appearance-head fizzy white)
+	(aroma wheat citrus coriander orange)
+	(flavor wheat citrus coriander orange)
+	(palate  smooth medium carbonation full)
+)
+
+(beer
+	(name guinness draught)
+	(brewer guiness ltd)
+	(style irish dry stout)
+	(abv .0420)
+	(appearance-body dark black)
+	(appearance-head rich creamy tan)
+	(aroma chocolate coffee)
+	(flavor coffee chocolate malt)
+	(palate medium low soft smooth)
+)
+
+(beer
+	(name budweiser)
+	(brewer anheuser-busch inc)
+	(style american adjunct lager)
+	(abv .0500)
+	(appearance-body pale yellow)
+	(appearance-head medium white)
+	(aroma corn malt grain dusty)
+	(flavor malt grain)
+	(palate light high carbonation fizzy)
+)
+
+(beer
+	(name miller lite)
+	(brewer miller brewing co)
+	(style light lager)
+	(abv .0417)
+	(appearance-body pale yellow)
+	(appearance-head medium white)
+	(aroma corn malt grain)
+	(flavor corn malt rice cereal grain)
+	(palate watery smooth high carbonation fizzy)
+)
+
+(beer
+	(name alaskan amber)
+	(brewer alaskan brewing co)
+	(style altbier)
+	(abv .0530)
+	(appearance-body amber red orange)
+	(aroma  malt honey hops earthy)
+	(flavor  malt molasses raisins hops caramel nutty)
+	(palate  clean dry high carbonation fizzy)
+)
+
+(beer
+	(name fat tire amber ale)
+	(brewer new belgium brewing)
+	(style american amber red ale)
+	(abv .0520)
+	(appearance-body coppery amber)
+	(appearance-head medium)
+	(aroma  bread hops malt spicy citrus apple caramel)
+	(flavor hops malt spicy bread)
+	(palate  medium smooth carbonation lively)
+)
+
+(beer
+	(name corona extra)
+	(brewer grupo modelo)
+	(style american adjunct lager)
+	(abv .0460)
+	(appearance-body pale yellow)
+	(appearance-head fizzy)
+	(aroma wet grain skunky)
+	(flavor wet grain)
+	(palate watery thin medium carbonation)
+)
+
+(beer
+	(name stella artois)
+	(brewer stella artois)
+	(style euro pale lager)
+	(abv .0500)
+	(appearance-body golden)
+	(appearance-head small white)
+	(aroma light floral hops)
+	(flavor hops citrus malt bitter)
+	(palate light medium carbonation)
+)
+
+(beer
+	(name heineken lager beer)
+	(brewer heineken nederland)
+	(style euro pale lager)
+	(abv .0500)
+	(appearance-body pale yellow)
+	(appearance-head medium)
+	(aroma yeast bread grain hops)
+	(flavor yeast bread grain hops)
+	(palate crisp smooth medium carbonation)
+)
+
+(beer
+	(name coors light)
+	(brewer coors brewing company)
+	(style light lager)
+	(abv .0420)
+	(appearance-body pale yellow)
+	(appearance-head fizzy)
+	(aroma barley malt lime wet hay grain)
+	(flavor barley malt grain)
+	(palate light dry mild soft)
+)
+
+(beer
+	(name dos equis amber lager)
+	(brewer cerveceria cuauhtemoc moctezuma)
+	(style vienna lager)
+	(abv .0450)
+	(appearance-body amber)
+	(appearance-head medium)
+	(aroma malt caramel toasted grain)
+	(flavor caramel hops malt brown sugar)
+	(palate medium carbonation)
+)
+
+(beer
+	(name franziskaner hefeweisse)
+	(brewer spaten-franziskaner-brau)
+	(style hefeweizen)
+	(abv .0500)
+	(appearance-body light golden)
+	(appearance-head medium)
+	(aroma malt wheat clove banana)
+	(flavor malt wheat clove banana)
+	(palate full carbonation)
+)
+
+(beer
+	(name the abyss)
+	(brewer deschutes brewery)
+	(style american double imperial stout)
+	(abv .1100)
+	(appearance-body black viscous dark)
+	(appearance-head brown)
+	(aroma roasted malt vanilla molasses coffee chocolate)
+	(flavor dark chocolate espresso vanilla molasses caramel toffee hops)
+	(palate full soft)
+)
+
+(beer
+	(name supplication)
+	(brewer russian river brewing co)
+	(style american wild ale)
+	(abv .0700)
+	(appearance-body dark amber hazy)
+	(appearance-head small white)
+	(aroma tart cherries citrus)
+	(flavor tart sour cherries vanilla white peach oak vinegar)
+	(palate tart smooth dry light soft)
+)
+
+(beer
+	(name raspberry tart)
+	(brewer new glarus brewing co)
+	(style fruit vegetable beer)
+	(abv .0400)
+	(appearance-body mahogany red)
+	(appearance-head small pink)
+	(aroma sweet tart apple grape raspberry jam)
+	(flavor bright sweet raspberry tart)
+	(palate creamy medium carbonation)
+)
+
+

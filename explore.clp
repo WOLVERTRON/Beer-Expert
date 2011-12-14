@@ -140,12 +140,12 @@
 		crlf vtab "Rating choices:"
 		crlf tab "hate, dislike, neutral, like, love"
 
-		crlf vtab "Beer choices:"
+		crlf vtab "Example beer choices:"
         crlf tab "Pliny The Younger, The Abyss, Parabola, Coors Light,"
-		crlf tab "Blue Moon Belgian White, Guinness Extra Stout, etc."
-		crlf tab "(NOTE: Due to variety of brews, input not restricted!)"
+		crlf tab "Blue Moon Belgian White, Guinness Extra Stout"
+		crlf tab "etc..."
 
-		crlf "Input as follows: [rating] [1 beer]"
+		crlf vtab "Input as follows: [rating] [1 beer]"
 
 		crlf vtab "EXAMPLE(S):"
 		crlf tab "type \"like corona extra\""
@@ -167,12 +167,12 @@
 		crlf vtab "Rating choices:"
 		crlf tab "hate, dislike, neutral, like, love"
 
-		crlf vtab "Style choices:"
+		crlf vtab "Example style choices:"
         crlf tab "Ale, Lager, IPA, Porter, Stout, Belgian, Amber,"
         crlf tab "Hefeweizen, Dunkelweizen"
 		crlf tab "etc..."
 
-		crlf "Input as follows: [rating] [1 style]"
+		crlf vtab "Input as follows: [rating] [1 style]"
 
 		crlf vtab "EXAMPLE(S):"
 		crlf tab "type \"like hefeweizen\""
@@ -194,13 +194,13 @@
 		crlf vtab "Rating choices:"
 		crlf tab "hate, dislike, neutral, like, love"
 
-		crlf vtab "Head-Appearance choices:"
+		crlf vtab "Example head appearance choices:"
 		crlf tab "small, average, large, huge,"
 		crlf tab "rocky, creamy, frothy, fizzy, none,"
 		crlf tab "white, cream, tan, lacing, lasting, diminishing"
 		crlf tab "etc..."
 
-		crlf "Input as follows: [rating] [multiple appearances]"
+		crlf vtab "Input as follows: [rating] [multiple appearances]"
 
 		crlf vtab "EXAMPLE(S):"
 		crlf tab "type \"like average creamy\""
@@ -222,13 +222,13 @@
 		crlf vtab "Rating choices:"
 		crlf tab "hate, dislike, neutral, like, love"
 
-		crlf vtab "Body-Appearance choices:"
+		crlf vtab "Example body appearance choices:"
 		crlf tab "clear, sparkling, normal, flat, cloudy, hazy, murky, muddy,"
 		crlf tab "particles, thin, average, thick, light, medium, dark, "
 		crlf tab "yellow, amber, orange, red, brown, black"
 		crlf tab "etc..."
 
-		crlf "Input as follows: [rating] [multiple appearances]"
+		crlf vtab "Input as follows: [rating] [multiple appearances]"
 
 		crlf vtab "EXAMPLE(S):"
 		crlf tab "type \"like amber red\""
@@ -250,7 +250,7 @@
 		crlf vtab "Rating choices:"
 		crlf tab "hate, dislike, neutral, like, love"
 
-		crlf vtab "Aroma choices:"
+		crlf vtab "Example aroma choices:"
 		crlf tab "bread, cookie, grain, hay, straw, cereal, toasted, roasted,"
 		crlf tab "burnt, nutty, molasses, caramel, chocolate, coffee,"
 		crlf tab "flowers, perfume, herbs, grass, pine, spruce, resin,"
@@ -263,8 +263,7 @@
 		crlf tab "nutmeg, clove, cinnamon, vanilla, pepper, licorice, cola,"
 		crlf tab "alcohol, dust, chalk, vegetable, corn, medicine, solvent,"
 		crlf tab "vinegar, sulfur, skunk"
-
-		crlf vtab "(NOTE: Due to variety of aromas, input not restricted!)"
+		crlf tab "etc..."
 
 		crlf vtab "Input as follows: "
 		crlf tab "[rating] [multiple aromas]"
@@ -290,10 +289,8 @@
 		crlf vtab "Rating choices:"
 		crlf tab "hate, dislike, neutral, like, love"
 
-		crlf vtab "Flavor choices:"
+		crlf vtab "Example flavor choices:"
 		crlf tab "sweet, acidic, bitter, acetic, sour, salty"
-
-		crlf vtab "(NOTE: If you expected different options, check aroma!)"
 
 		crlf vtab "Input as follows: "
 		crlf tab "[rating] [multiple flavors]"
@@ -318,10 +315,11 @@
 		crlf vtab "Rating choices:"
 		crlf tab "hate, dislike, neutral, like, love"
 
-		crlf vtab "Palate choices:"
+		crlf vtab "Example palate choices:"
 		crlf tab "light, medium, full, dry, watery, oily, creamy, syrupy,"
 		crlf tab "fizzy, lively, soft, flat, metallic, chalky, astringent,"
 		crlf tab "alcoholic"
+		crlf tab "etc..."
 
 		crlf vtab "Input as follows: "
 		crlf tab "[rating] [multiple palates]"
@@ -346,11 +344,10 @@
 		crlf vtab "Rating choices:"
 		crlf tab "hate, dislike, neutral, like, love"
 
-		crlf vtab "Brewer choices:"
-		crlf tab "Deschutes Brewery, Goose Island Beer Co., "
-		crlf tab "Dogfish Head Craft Brewery, Lagunitas Brewing Co., etc."
-
-		crlf vtab "(NOTE: Due to variety of brewers, input not restricted!)"
+		crlf vtab "Example brewer choices:"
+		crlf tab "Deschutes Brewery, Goose Island Beer Company, "
+		crlf tab "Dogfish Head Craft Brewery, Lagunitas Brewing Company"
+		crlf tab "etc..."
 
 		crlf vtab "Input as follows: "
 		crlf tab "[rating] [1 brewer]"
@@ -375,9 +372,10 @@
 		crlf vtab "Rating choices:"
 		crlf tab "hate, dislike, neutral, like, love"
 
-		crlf vtab "Region choices:"
+		crlf vtab "Example region choices:"
 		crlf tab "SoCal, PacNW, Midwest, East-coast, South, Mountain"
 		;crlf tab "Vegas" ; not really a region, but define availability?
+		crlf tab "etc..."
 
 		crlf vtab "Input as follows: "
 		crlf tab "[rating] [multiple locations]"
